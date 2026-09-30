@@ -228,7 +228,7 @@ export async function dishonorCheque(input: DishonorChequeInput): Promise<{
       return { success: false, restoredBillsCount: 0, newClosingBalance: 0, error: 'Cheque is already dishonored' };
     }
     if (cheque.cheque_type !== 'INCOMING' || !cheque.receipt_id) {
-      return { success: false, restoredBillsCount: 0, newClosingBalance: 0, error: 'Only incoming customer cheques can be dishonored via CHQRET routine' };
+      return { success: false, restoredBillsCount: 0, newClosingBalance: 0, error: 'Only incoming customer cheques can be marked as dishonored.' };
     }
 
     const receipt = sqlite.prepare('SELECT * FROM customer_receipts WHERE id = ?').get(cheque.receipt_id) as any;

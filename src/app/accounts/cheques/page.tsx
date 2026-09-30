@@ -159,7 +159,7 @@ export default function ChequeRegisterPage() {
 
   return (
     <DosWindow
-      title="CHEQUE REGISTER & LIFECYCLE MANAGEMENT [CHQREG / CHQRET]"
+      title="Cheque Register & Status"
       breadcrumbs={['ACCOUNTS', 'CHEQUES']}
       actions={[
         { keyLabel: 'N', label: 'New Cheque', onClick: () => setActionType('new') },
@@ -189,7 +189,7 @@ export default function ChequeRegisterPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [F2] INCOMING (CUSTOMERS)
+            [F2] CUSTOMER CHEQUES (IN)
           </button>
           <button
             type="button"
@@ -200,7 +200,7 @@ export default function ChequeRegisterPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [F3] OUTGOING (SUPPLIERS)
+            [F3] SUPPLIER CHEQUES (OUT)
           </button>
           <button
             type="button"
@@ -251,7 +251,7 @@ export default function ChequeRegisterPage() {
         {/* Filter Strip */}
         <div className="p-2 bg-brand-surface border border-brand-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1">
-            <span className="font-bold text-gray-700">FAST SEARCH:</span>
+            <span className="font-bold text-gray-700">SEARCH:</span>
             <input
               type="text"
               placeholder="Search Cheque No, Party Name, Bank..."
@@ -457,14 +457,14 @@ export default function ChequeRegisterPage() {
         <DosModal
           isOpen={actionType === 'dishonor'}
           onClose={() => setActionType(null)}
-          title={`CHEQUE RETURN / DISHONOR ROUTINE [CHQRET] - [${selectedCheque?.chequeNo}]`}
+          title={`Cheque Dishonor / Bounce - [${selectedCheque?.chequeNo}]`}
           variant="danger"
-          confirmText="[Enter: Execute Dishonor Reversal]"
+          confirmText="[Enter: Confirm Dishonor]"
           onConfirm={handleDishonorSubmit}
         >
           <div className="flex flex-col gap-3">
             <div className="p-2 bg-red-50 border border-red-300 text-red-800 text-[11px] leading-relaxed">
-              <strong>ATTENTION (CHQRET.PRG PARITY):</strong> Executing this dishonor routine will immediately reverse the customer receipt voucher, restore all previously cleared invoices to OPEN/PARTIALLY_PAID status, and re-debit the customer account by ₹{selectedCheque?.amount} plus penalty fee.
+              <strong>Notice:</strong> Mark cheque as dishonored / bounced? This will reopen the original invoices and debit the customer balance by ₹{selectedCheque?.amount} plus penalty fee.
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -496,11 +496,11 @@ export default function ChequeRegisterPage() {
                   onChange={(e) => setDishonorReason(e.target.value)}
                   className="w-full p-1 bg-white border border-brand-border font-bold"
                 >
-                  <option value="INSUFFICIENT_FUNDS">INSUFFICIENT FUNDS (FUNDS INSUFFICIENT)</option>
-                  <option value="SIGNATURE_MISMATCH">SIGNATURE DIFFERS / MISMATCH</option>
-                  <option value="STOP_PAYMENT">PAYMENT STOPPED BY DRAWER</option>
-                  <option value="EXPIRED">CHEQUE OUTDATED / EXPIRED</option>
-                  <option value="OTHER">OTHER TECHNICAL REASON</option>
+                  <option value="INSUFFICIENT_FUNDS">Insufficient Funds</option>
+                  <option value="SIGNATURE_MISMATCH">Signature Differs / Mismatch</option>
+                  <option value="STOP_PAYMENT">Payment Stopped by Drawer</option>
+                  <option value="EXPIRED">Cheque Outdated / Expired</option>
+                  <option value="OTHER">Other Technical Reason</option>
                 </select>
               </div>
             </div>
@@ -511,7 +511,7 @@ export default function ChequeRegisterPage() {
         <DosModal
           isOpen={actionType === 'new'}
           onClose={() => setActionType(null)}
-          title="ADD INDEPENDENT CHEQUE [CHQENTY]"
+          title="Add Cheque Entry"
           confirmText="[Enter: Save Cheque]"
           onConfirm={handleNewChequeSubmit}
         >

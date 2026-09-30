@@ -251,13 +251,13 @@ export default function CustomerReceiptsPage() {
 
   return (
     <DosWindow
-      title="CUSTOMER COLLECTION & RECEIPT ENTRY [COLENTY3]"
+      title="Customer Collections & Receipts"
       breadcrumbs={['ACCOUNTS', 'RECEIPTS']}
       actions={[
         { keyLabel: 'F1', label: 'New Receipt', onClick: () => setActiveTab('entry') },
         { keyLabel: 'F4', label: 'Receipts Register', onClick: () => setActiveTab('register') },
         { keyLabel: 'Alt+A', label: 'Auto-Allocate (FIFO)', onClick: handleAutoAllocate },
-        { keyLabel: 'F10', label: 'Save Voucher', onClick: handleSaveReceipt },
+        { keyLabel: 'F10', label: 'Save Receipt', onClick: handleSaveReceipt },
       ]}
     >
       <div className="flex flex-col gap-4 font-mono text-xs">
@@ -283,7 +283,7 @@ export default function CustomerReceiptsPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [F4] AUDIT RECEIPTS REGISTER
+            [F4] RECEIPTS REGISTER
           </button>
         </div>
 
@@ -303,16 +303,16 @@ export default function CustomerReceiptsPage() {
             {/* Top Customer Card */}
             <div className="p-3 bg-brand-surface border border-brand-border grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="md:col-span-2">
-                <label className="block font-bold text-gray-700 mb-1">SELECT CUSTOMER (F2 / SEARCH):</label>
+                <label className="block font-bold text-gray-700 mb-1">SELECT CUSTOMER:</label>
                 <select
                   value={selectedCustomerId}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
                   className="w-full p-1.5 bg-white border border-brand-border font-bold text-brand-ink"
                 >
-                  <option value="">-- SELECT CUSTOMER ACCOUNT --</option>
+                  <option value="">-- Select Customer Account --</option>
                   {customers.map((c) => (
                     <option key={c.id} value={c.id}>
-                      [{c.code}] {c.name} — Bal: ₹{c.closingBalance.toFixed(2)}
+                      [{c.code}] {c.name} — Balance: ₹{c.closingBalance.toFixed(2)}
                     </option>
                   ))}
                 </select>
@@ -329,7 +329,7 @@ export default function CustomerReceiptsPage() {
               </div>
 
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold uppercase">OUTSTANDING (A/R)</span>
+                <span className="block text-[10px] text-gray-500 font-bold uppercase">OUTSTANDING BALANCE</span>
                 <span className="text-base font-bold text-red-600">
                   ₹ {selectedCustomer ? selectedCustomer.closingBalance.toFixed(2) : '0.00'}
                 </span>
@@ -408,7 +408,7 @@ export default function CustomerReceiptsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-600 font-bold mb-1">DRAWN BANK:</label>
+                    <label className="block text-gray-600 font-bold mb-1">BANK NAME:</label>
                     <input
                       type="text"
                       placeholder="e.g. State Bank of India"
@@ -421,7 +421,7 @@ export default function CustomerReceiptsPage() {
                     <label className="block text-gray-600 font-bold mb-1">BRANCH:</label>
                     <input
                       type="text"
-                      placeholder="e.g. Anna Nagar"
+                      placeholder="e.g. Main Branch"
                       value={branchName}
                       onChange={(e) => setBranchName(e.target.value)}
                       className="w-full p-1 bg-white border border-brand-border"
@@ -459,7 +459,7 @@ export default function CustomerReceiptsPage() {
             <div className="bg-white border border-brand-border flex flex-col">
               <div className="p-2 bg-brand-surface border-b border-brand-border flex items-center justify-between">
                 <span className="font-bold text-brand-ink uppercase">
-                  OUTSTANDING BILLS ALLOCATION (FIFO ORDER)
+                  OUTSTANDING INVOICES ALLOCATION (FIFO)
                 </span>
                 <button
                   type="button"
@@ -544,7 +544,7 @@ export default function CustomerReceiptsPage() {
                   <span className="text-sm text-gray-700">₹ {numDiscount.toFixed(2)}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-500 block">ADVANCE CREDIT (EXAMT):</span>
+                  <span className="text-[10px] text-gray-500 block">ADVANCE / UNALLOCATED:</span>
                   <span className={`text-sm ${unallocatedAdvance > 0 ? 'text-brand-amber' : 'text-gray-500'}`}>
                     ₹ {unallocatedAdvance.toFixed(2)}
                   </span>
@@ -560,7 +560,7 @@ export default function CustomerReceiptsPage() {
                 disabled={loading || !selectedCustomerId || numTotalAmount <= 0}
                 className="px-6 py-2 bg-brand-ink text-white font-bold hover:bg-brand-ink/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-[3px_3px_0px_0px_#F05A28]"
               >
-                <span>[F10] SAVE RECEIPT VOUCHER</span>
+                <span>[F10] SAVE RECEIPT</span>
               </button>
             </div>
           </div>
@@ -568,7 +568,7 @@ export default function CustomerReceiptsPage() {
           /* Receipts Register Tab */
           <div className="bg-white border border-brand-border flex flex-col">
             <div className="p-2 bg-brand-surface border-b border-brand-border flex items-center justify-between">
-              <span className="font-bold text-brand-ink uppercase">RECEIPTS & COLLECTIONS AUDIT LOG</span>
+              <span className="font-bold text-brand-ink uppercase">RECEIPTS & COLLECTIONS REGISTER</span>
               <button
                 type="button"
                 onClick={loadReceipts}
@@ -668,7 +668,7 @@ export default function CustomerReceiptsPage() {
         >
           <div className="flex flex-col gap-2">
             <p className="text-sm font-bold text-red-700">
-              WARNING: Reversing this collection voucher will restore the original outstanding balances on all allocated customer invoices and re-increase the customer receivable balance.
+              Notice: Reversing this collection receipt will restore the balance on all allocated invoices and update the customer ledger accordingly.
             </p>
             <p className="text-xs text-gray-700">
               Are you sure you want to proceed with reversing receipt ID: {deleteReceiptId}?

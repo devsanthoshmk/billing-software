@@ -248,13 +248,13 @@ export default function SupplierPaymentsPage() {
 
   return (
     <DosWindow
-      title="SUPPLIER PAYMENT VOUCHER ENTRY [PMTENTY]"
+      title="Supplier Payments"
       breadcrumbs={['ACCOUNTS', 'PAYMENTS']}
       actions={[
         { keyLabel: 'F1', label: 'New Payment', onClick: () => setActiveTab('entry') },
         { keyLabel: 'F4', label: 'Payments Register', onClick: () => setActiveTab('register') },
         { keyLabel: 'Alt+A', label: 'Auto-Allocate (FIFO)', onClick: handleAutoAllocate },
-        { keyLabel: 'F10', label: 'Save Voucher', onClick: handleSavePayment },
+        { keyLabel: 'F10', label: 'Save Payment', onClick: handleSavePayment },
       ]}
     >
       <div className="flex flex-col gap-4 font-mono text-xs">
@@ -280,7 +280,7 @@ export default function SupplierPaymentsPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [F4] AUDIT PAYMENTS REGISTER
+            [F4] PAYMENTS REGISTER
           </button>
         </div>
 
@@ -300,16 +300,16 @@ export default function SupplierPaymentsPage() {
             {/* Top Supplier Card */}
             <div className="p-3 bg-brand-surface border border-brand-border grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="md:col-span-2">
-                <label className="block font-bold text-gray-700 mb-1">SELECT SUPPLIER (F2 / SEARCH):</label>
+                <label className="block font-bold text-gray-700 mb-1">SELECT SUPPLIER:</label>
                 <select
                   value={selectedSupplierId}
                   onChange={(e) => setSelectedSupplierId(e.target.value)}
                   className="w-full p-1.5 bg-white border border-brand-border font-bold text-brand-ink"
                 >
-                  <option value="">-- SELECT SUPPLIER ACCOUNT --</option>
+                  <option value="">-- Select Supplier Account --</option>
                   {suppliers.map((s) => (
                     <option key={s.id} value={s.id}>
-                      [{s.code}] {s.name} — Payable: ₹{s.currentBalance.toFixed(2)}
+                      [{s.code}] {s.name} — Balance: ₹{s.currentBalance.toFixed(2)}
                     </option>
                   ))}
                 </select>
@@ -321,12 +321,12 @@ export default function SupplierPaymentsPage() {
               </div>
 
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold uppercase">OPEN BILLS COUNT</span>
+                <span className="block text-[10px] text-gray-500 font-bold uppercase">OPEN INWARD BILLS</span>
                 <span className="text-sm font-bold text-gray-700">{openPurchases.length} Open Inward Bills</span>
               </div>
 
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold uppercase">CURRENT PAYABLE (A/P)</span>
+                <span className="block text-[10px] text-gray-500 font-bold uppercase">CURRENT PAYABLE BALANCE</span>
                 <span className="text-base font-bold text-red-600">
                   ₹ {selectedSupplier ? selectedSupplier.currentBalance.toFixed(2) : '0.00'}
                 </span>
@@ -372,7 +372,7 @@ export default function SupplierPaymentsPage() {
               </div>
 
               <div>
-                <label className="block text-brand-amber font-bold mb-1">DISBURSEMENT AMOUNT (₹):</label>
+                <label className="block text-brand-amber font-bold mb-1">PAYMENT AMOUNT (₹):</label>
                 <input
                   type="number"
                   step="0.01"
@@ -406,7 +406,7 @@ export default function SupplierPaymentsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-600 font-bold mb-1">ISSUING BANK:</label>
+                    <label className="block text-gray-600 font-bold mb-1">BANK NAME:</label>
                     <input
                       type="text"
                       placeholder="e.g. State Bank of India"
@@ -468,7 +468,7 @@ export default function SupplierPaymentsPage() {
             <div className="bg-white border border-brand-border flex flex-col">
               <div className="p-2 bg-brand-surface border-b border-brand-border flex items-center justify-between">
                 <span className="font-bold text-brand-ink uppercase">
-                  OPEN PURCHASE BILLS ALLOCATION (FIFO ORDER)
+                  OPEN PURCHASE INVOICES ALLOCATION (FIFO)
                 </span>
                 <button
                   type="button"
@@ -541,7 +541,7 @@ export default function SupplierPaymentsPage() {
               {/* Bottom Summary Bar */}
               <div className="p-3 bg-brand-surface border-t border-brand-border grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-bold">
                 <div>
-                  <span className="text-[10px] text-gray-500 block">TOTAL DISBURSED:</span>
+                  <span className="text-[10px] text-gray-500 block">TOTAL PAID:</span>
                   <span className="text-sm text-brand-ink">₹ {numTotalAmount.toFixed(2)}</span>
                 </div>
                 <div>
@@ -549,11 +549,11 @@ export default function SupplierPaymentsPage() {
                   <span className="text-sm text-blue-700">₹ {totalAllocated.toFixed(2)}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-500 block">DISCOUNT EARNED:</span>
+                  <span className="text-[10px] text-gray-500 block">DISCOUNT RECEIVED:</span>
                   <span className="text-sm text-gray-700">₹ {numDiscount.toFixed(2)}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-500 block">ADVANCE TO VENDOR:</span>
+                  <span className="text-[10px] text-gray-500 block">ADVANCE / UNALLOCATED:</span>
                   <span className={`text-sm ${unallocatedAdvance > 0 ? 'text-brand-amber' : 'text-gray-500'}`}>
                     ₹ {unallocatedAdvance.toFixed(2)}
                   </span>
@@ -569,7 +569,7 @@ export default function SupplierPaymentsPage() {
                 disabled={loading || !selectedSupplierId || numTotalAmount <= 0}
                 className="px-6 py-2 bg-brand-ink text-white font-bold hover:bg-brand-ink/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-[3px_3px_0px_0px_#F05A28]"
               >
-                <span>[F10] SAVE PAYMENT VOUCHER</span>
+                <span>[F10] SAVE PAYMENT</span>
               </button>
             </div>
           </div>
@@ -577,7 +577,7 @@ export default function SupplierPaymentsPage() {
           /* Payments Register Tab */
           <div className="bg-white border border-brand-border flex flex-col">
             <div className="p-2 bg-brand-surface border-b border-brand-border flex items-center justify-between">
-              <span className="font-bold text-brand-ink uppercase">SUPPLIER DISBURSEMENTS AUDIT LOG</span>
+              <span className="font-bold text-brand-ink uppercase">SUPPLIER PAYMENTS REGISTER</span>
               <button
                 type="button"
                 onClick={loadPayments}
@@ -675,7 +675,7 @@ export default function SupplierPaymentsPage() {
         >
           <div className="flex flex-col gap-2">
             <p className="text-sm font-bold text-red-700">
-              WARNING: Reversing this payment voucher will restore the open balance on all allocated purchase bills and re-increase accounts payable to the supplier.
+              Notice: Reversing this payment voucher will restore the balance on all allocated purchase invoices and update the supplier ledger accordingly.
             </p>
             <p className="text-xs text-gray-700">
               Are you sure you want to proceed with reversing payment ID: {deletePaymentId}?

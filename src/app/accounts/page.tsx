@@ -46,50 +46,50 @@ export default function AccountsDashboardPage() {
     {
       num: '1',
       hotkey: 'F1',
-      title: 'CUSTOMER COLLECTION & RECEIPT ENTRY',
-      desc: 'Bill-by-bill collection, FIFO allocation, customer AR reduction & advance credit retention',
+      title: 'Customer Collections & Receipts',
+      desc: 'Record bill-by-bill collections, FIFO allocations, customer balance adjustments, and manage advances',
       href: '/accounts/receipts',
     },
     {
       num: '2',
       hotkey: 'F2',
-      title: 'SUPPLIER PAYMENT VOUCHER ENTRY',
-      desc: 'Disbursement against purchase bills, AP balance deduction, cash & cheque vouchers',
+      title: 'Supplier Payments',
+      desc: 'Disburse payments against purchase bills, track supplier payables, and record cash or cheque vouchers',
       href: '/accounts/payments',
     },
     {
       num: '3',
       hotkey: 'F3',
-      title: 'CHEQUE REGISTER & LIFECYCLE MANAGEMENT',
-      desc: 'Central cheque tracker: Deposit, bank clearance, and dishonor rollback with fee',
+      title: 'Cheque Register & Status',
+      desc: 'Central cheque tracker: deposits, bank clearances, and dishonor rollback handling',
       href: '/accounts/cheques',
     },
     {
       num: '4',
       hotkey: 'F4',
-      title: 'COLLECTIONS & RECEIPTS REGISTER',
-      desc: 'Audit view of all issued customer receipts, payment modes and allocation details',
-      href: '/accounts/receipts?tab=register',
+      title: 'Customer Overdue Ageing',
+      desc: 'Monitor receivables across 30, 60, 90, and 120+ day buckets with overdue interest tracking',
+      href: '/accounts/ageing',
     },
     {
       num: '5',
       hotkey: 'F5',
-      title: 'SUPPLIER DISBURSEMENTS REGISTER',
-      desc: 'Audit view of supplier payments, cash discounts earned, and bank account breakdown',
-      href: '/accounts/payments?tab=register',
+      title: 'Advance Payment Settlement',
+      desc: 'Reconcile unallocated advance collection receipts against open customer invoices via FIFO',
+      href: '/accounts/on-account',
     },
     {
       num: '6',
       hotkey: 'F6',
-      title: 'BANK RECONCILIATION & CHEQUES IN-HAND',
-      desc: 'View all pending customer cheques awaiting deposit or clearance in bank',
+      title: 'Bank Clearance & Cheques In-Hand',
+      desc: 'View all pending customer cheques awaiting bank deposit or clearance',
       href: '/accounts/cheques?tab=in_hand',
     },
   ];
 
   return (
     <DosWindow
-      title="FINANCIAL ACCOUNTS & PARTY LEDGERS [PARMENU]"
+      title="Customer & Supplier Accounts Ledger"
       breadcrumbs={['MAIN MENU', 'ACCOUNTS & LEDGERS']}
     >
       <div className="flex flex-col gap-6">
