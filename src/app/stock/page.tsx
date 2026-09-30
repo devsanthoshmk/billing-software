@@ -18,53 +18,93 @@ export default async function StockDashboard() {
   const totalValuation = allBatches.reduce((sum, b) => sum + (b.stockQty * b.purchaseRate), 0);
 
   const actions: DosAction[] = [
-    { keyLabel: 'F2', label: 'Purchase GRN' },
+    { keyLabel: 'F2', label: 'Purchase Inward' },
     { keyLabel: 'F3', label: 'Purchase Returns' },
     { keyLabel: 'F4', label: 'Stock Adjustments' },
+    { keyLabel: 'F6', label: 'Branch Transfers' },
+    { keyLabel: 'F7', label: 'Rack & Rate Setup' },
+    { keyLabel: 'F8', label: 'Multi-MRP Batches' },
+    { keyLabel: 'F9', label: 'Expiry & Damage Claims' },
+    { keyLabel: 'F10', label: 'HSN & Tax Slabs' },
   ];
 
   return (
     <div className="flex flex-col h-full bg-brand-paper">
       <DosWindow
-        title="STOCK & INVENTORY CONTROL SYSTEM (STKMENU.PRG / CLOSTK.PRG)"
-        subtitle="REAL-TIME BATCH TRACKING & VALUATION"
-        breadcrumbs={['STOCK', 'INVENTORY DASHBOARD']}
+        title="Stock & Inventory Control"
+        subtitle="Real-time batch tracking, stock valuation, warehouse transfers & claim settlements"
+        breadcrumbs={['Stock', 'Inventory Dashboard']}
         actions={actions}
         statusInfo={
           <span className="text-brand-amber font-bold">
-            BATCHES: {totalBatches} | TOTAL VALUE: ₹ {totalValuation.toFixed(2)}
+            Batches: {totalBatches} | Total Valuation: ₹ {totalValuation.toFixed(2)}
           </span>
         }
       >
         <div className="flex flex-col h-full p-2 gap-2 font-mono text-xs">
           {/* Quick Action Navigation Buttons */}
           <div className="bg-brand-surface border border-brand-border p-2 flex flex-wrap gap-2 items-center justify-between">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-1.5">
               <Link
                 href="/stock/purchase"
-                className="bg-brand-ink text-white font-bold px-3 py-1.5 border border-black hover:bg-brand-amber flex items-center gap-1.5"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
               >
                 <span className="bg-brand-amber text-white px-1 text-[10px]">F2</span>
                 <span>Purchase Inward (GRN)</span>
               </Link>
               <Link
                 href="/stock/returns"
-                className="bg-brand-ink text-white font-bold px-3 py-1.5 border border-black hover:bg-brand-amber flex items-center gap-1.5"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
               >
                 <span className="bg-brand-amber text-white px-1 text-[10px]">F3</span>
                 <span>Purchase Returns</span>
               </Link>
               <Link
                 href="/stock/adjustments"
-                className="bg-brand-ink text-white font-bold px-3 py-1.5 border border-black hover:bg-brand-amber flex items-center gap-1.5"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
               >
                 <span className="bg-brand-amber text-white px-1 text-[10px]">F4</span>
-                <span>Stock Adjustments & Rates</span>
+                <span>Stock Adjustments</span>
+              </Link>
+              <Link
+                href="/stock/transfers"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
+              >
+                <span className="bg-brand-amber text-white px-1 text-[10px]">F6</span>
+                <span>Branch Transfers</span>
+              </Link>
+              <Link
+                href="/stock/rack-management"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
+              >
+                <span className="bg-brand-amber text-white px-1 text-[10px]">F7</span>
+                <span>Rack & Rate Setup</span>
+              </Link>
+              <Link
+                href="/stock/multi-mrp"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
+              >
+                <span className="bg-brand-amber text-white px-1 text-[10px]">F8</span>
+                <span>Multi-MRP Batches</span>
+              </Link>
+              <Link
+                href="/stock/claims"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
+              >
+                <span className="bg-brand-amber text-white px-1 text-[10px]">F9</span>
+                <span>Expiry Claims</span>
+              </Link>
+              <Link
+                href="/stock/hsn-mapping"
+                className="bg-brand-ink text-white font-bold px-2.5 py-1 border border-black hover:bg-brand-amber flex items-center gap-1"
+              >
+                <span className="bg-brand-amber text-white px-1 text-[10px]">F10</span>
+                <span>HSN & Tax Slabs</span>
               </Link>
             </div>
 
             <div className="flex gap-4 text-brand-ink">
-              <span>Saleable Units: <strong>{totalStockUnits}</strong></span>
+              <span>Saleable Stock: <strong>{totalStockUnits}</strong></span>
               <span>Quarantine: <strong className="text-red-600">{totalQuarantineUnits}</strong></span>
             </div>
           </div>
@@ -75,16 +115,16 @@ export default async function StockDashboard() {
               <thead className="sticky top-0 bg-brand-ink text-white z-10">
                 <tr>
                   <th className="w-8 px-1 py-1 text-center">#</th>
-                  <th className="w-20 px-2 py-1 text-left">CODE</th>
+                  <th className="w-20 px-2 py-1 text-left">ITEM CODE</th>
                   <th className="px-2 py-1 text-left">PRODUCT NAME</th>
-                  <th className="w-24 px-2 py-1 text-center">BATCH</th>
-                  <th className="w-20 px-2 py-1 text-center">EXPY</th>
-                  <th className="w-20 px-2 py-1 text-right">STOCK</th>
+                  <th className="w-24 px-2 py-1 text-center">BATCH NO</th>
+                  <th className="w-20 px-2 py-1 text-center">EXPIRY</th>
+                  <th className="w-20 px-2 py-1 text-right">SALEABLE</th>
                   <th className="w-20 px-2 py-1 text-right">QUARANTINE</th>
-                  <th className="w-20 px-2 py-1 text-right">P.RATE</th>
-                  <th className="w-20 px-2 py-1 text-right">S.RATE</th>
+                  <th className="w-20 px-2 py-1 text-right">PUR. RATE</th>
+                  <th className="w-20 px-2 py-1 text-right">SEL. RATE</th>
                   <th className="w-20 px-2 py-1 text-right">MRP</th>
-                  <th className="w-24 px-2 py-1 text-right">VALUATION</th>
+                  <th className="w-24 px-2 py-1 text-right">TOTAL VALUE</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,7 +178,7 @@ export default async function StockDashboard() {
           {/* Footer Summary */}
           <div className="bg-brand-surface border border-brand-border p-2 flex justify-between text-[11px] text-gray-600">
             <span>Total Batches Tracked: {totalBatches}</span>
-            <span>Current Valuation at Cost: ₹ {totalValuation.toFixed(2)}</span>
+            <span>Total Stock Valuation (at Purchase Cost): ₹ {totalValuation.toFixed(2)}</span>
           </div>
         </div>
       </DosWindow>

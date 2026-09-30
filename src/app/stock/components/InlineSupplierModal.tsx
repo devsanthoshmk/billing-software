@@ -30,7 +30,7 @@ export function InlineSupplierModal({
     setError(null);
 
     if (!name.trim()) {
-      setError('Supplier Name is required!');
+      setError('Please enter the supplier name.');
       return;
     }
 
@@ -63,10 +63,10 @@ export function InlineSupplierModal({
     <DosModal
       isOpen={isOpen}
       onClose={onClose}
-      title="NEW SUPPLIER REGISTRATION (+)"
+      title="Add New Supplier / Vendor"
       width="max-w-xl"
-      confirmText="[F5: Save Supplier]"
-      cancelText="[ESC: Cancel]"
+      confirmText="Save Supplier [F5]"
+      cancelText="Cancel [Esc]"
       onConfirm={handleSubmit}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 font-mono text-xs">
@@ -83,7 +83,7 @@ export function InlineSupplierModal({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value.toUpperCase())}
-              placeholder="COMPANY / DISTRIBUTOR NAME"
+              placeholder="e.g., Abbott Healthcare Pvt Ltd"
               className="w-full bg-[#00AAAA] text-black font-bold px-1.5 py-0.5 border border-black focus:outline-none uppercase"
               autoFocus
               required
@@ -96,7 +96,7 @@ export function InlineSupplierModal({
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Door No, Street"
+              placeholder="Door No., Street name, Area"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
@@ -107,7 +107,7 @@ export function InlineSupplierModal({
               type="text"
               value={place}
               onChange={(e) => setPlace(e.target.value)}
-              placeholder="City / Town"
+              placeholder="e.g., Chennai"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
@@ -118,7 +118,7 @@ export function InlineSupplierModal({
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Contact digits"
+              placeholder="e.g., 9876543210"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
@@ -129,12 +129,12 @@ export function InlineSupplierModal({
               type="text"
               value={gstin}
               onChange={(e) => setGstin(e.target.value.toUpperCase())}
-              placeholder="15-character GSTIN"
+              placeholder="15-digit GSTIN (e.g., 33AAAAA0000A1Z5)"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5 uppercase"
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">Credit Days :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Credit Period (Days) :</label>
           <div className="col-span-8">
             <input
               type="number"
@@ -144,7 +144,7 @@ export function InlineSupplierModal({
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">Default Disc% :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Default Trade Disc% :</label>
           <div className="col-span-8">
             <input
               type="number"

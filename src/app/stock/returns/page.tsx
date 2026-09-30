@@ -171,11 +171,11 @@ export default function PurchaseReturnsPage() {
   const handleSubmitReturn = async () => {
     setErrorMessage(null);
     if (!selectedSupplierId) {
-      setErrorMessage('Supplier is required');
+      setErrorMessage('Please select a supplier.');
       return;
     }
     if (lines.length === 0) {
-      setErrorMessage('Add at least 1 return item');
+      setErrorMessage('Please add at least one product item to return.');
       return;
     }
 
@@ -212,7 +212,7 @@ export default function PurchaseReturnsPage() {
   const actions: DosAction[] = [
     {
       keyLabel: 'F2',
-      label: 'Search Item',
+      label: 'Add Product',
       onClick: () => setShowProductSearch(true),
     },
     {
@@ -224,7 +224,7 @@ export default function PurchaseReturnsPage() {
     },
     {
       keyLabel: 'F12',
-      label: 'Clear',
+      label: 'Clear All',
       variant: 'danger',
       onClick: () => setLines([]),
     },
@@ -233,13 +233,13 @@ export default function PurchaseReturnsPage() {
   return (
     <div className="flex flex-col h-full bg-brand-paper">
       <DosWindow
-        title="PURCHASE RETURN PREPARATION (PRETPRE.PRG)"
-        subtitle="SUPPLIER DEBIT NOTE & STOCK DEDUCTION"
-        breadcrumbs={['STOCK', 'PURCHASE RETURNS']}
+        title="Purchase Returns (Debit Note to Supplier)"
+        subtitle="Issue debit notes to vendors and adjust inventory for returned batches"
+        breadcrumbs={['Stock', 'Purchase Returns']}
         actions={actions}
         statusInfo={
           <span className="text-brand-amber font-bold">
-            ITEMS: {lines.length} | TOTAL DEBIT: ₹ {grandTotal.toFixed(2)}
+            Items: {lines.length} | Total Return Value: ₹ {grandTotal.toFixed(2)}
           </span>
         }
       >
@@ -277,7 +277,7 @@ export default function PurchaseReturnsPage() {
                 onChange={(e) => handleLoadPurchaseItems(e.target.value)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5"
               >
-                <option value="">-- Direct Supplier Return --</option>
+                <option value="">-- Direct Supplier Return (Unlinked) --</option>
                 {supplierPurchases.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.inwardNo} ({p.inwardDate}) - ₹{p.netAmount}
@@ -293,8 +293,8 @@ export default function PurchaseReturnsPage() {
                 onChange={(e) => setRateBasis(e.target.value as any)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5 font-bold"
               >
-                <option value="P">P (Purchase Rate)</option>
-                <option value="S">S (Selling Rate)</option>
+                <option value="P">Purchase Rate (Cost)</option>
+                <option value="S">Selling Rate</option>
               </select>
             </div>
 
@@ -309,7 +309,7 @@ export default function PurchaseReturnsPage() {
             </div>
 
             <div className="col-span-3 flex items-center gap-1">
-              <label className="font-bold text-brand-ink">LR Number:</label>
+              <label className="font-bold text-brand-ink">LR / Docket No:</label>
               <input
                 type="text"
                 value={lrNo}
@@ -348,13 +348,13 @@ export default function PurchaseReturnsPage() {
               <thead className="sticky top-0 bg-brand-ink text-white z-10">
                 <tr>
                   <th className="w-8 px-1 py-1 text-center">#</th>
-                  <th className="w-20 px-2 py-1 text-left">CODE</th>
+                  <th className="w-20 px-2 py-1 text-left">ITEM CODE</th>
                   <th className="px-2 py-1 text-left">PRODUCT NAME</th>
-                  <th className="w-24 px-2 py-1 text-center">BATCH</th>
-                  <th className="w-20 px-2 py-1 text-center">EXPY</th>
-                  <th className="w-16 px-2 py-1 text-right">QTY</th>
+                  <th className="w-24 px-2 py-1 text-center">BATCH NO</th>
+                  <th className="w-20 px-2 py-1 text-center">EXPIRY</th>
+                  <th className="w-16 px-2 py-1 text-right">RETURN QTY</th>
                   <th className="w-20 px-2 py-1 text-right">RETURN RATE</th>
-                  <th className="w-24 px-2 py-1 text-right">VALUE</th>
+                  <th className="w-24 px-2 py-1 text-right">NET VALUE</th>
                   <th className="w-8 px-1 py-1 text-center">DEL</th>
                 </tr>
               </thead>

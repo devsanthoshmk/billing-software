@@ -128,7 +128,7 @@ export default function StockAdjustmentsPage() {
     const modified = reconcileRows.filter((r) => r.variance !== 0);
 
     if (modified.length === 0) {
-      setErrorMessage('No discrepancies found between Physical Count and System Stock.');
+      setErrorMessage('No discrepancies found between physical count and system stock.');
       return;
     }
 
@@ -148,7 +148,7 @@ export default function StockAdjustmentsPage() {
       });
 
       if (res.success) {
-        setSuccessMessage(`Physical reconciliation applied across ${res.adjustedCount} batches.`);
+        setSuccessMessage(`Stock adjustments successfully recorded for ${res.adjustedCount} batch(es).`);
         loadBatches();
       } else {
         setErrorMessage(res.error || 'Failed to reconcile physical count');
@@ -181,7 +181,7 @@ export default function StockAdjustmentsPage() {
       });
 
       if (res.success) {
-        setSuccessMessage('Batch rates updated successfully and recorded in audit log.');
+        setSuccessMessage('Batch rates updated successfully.');
         loadBatches();
       } else {
         setErrorMessage(res.error || 'Failed to update rates');
@@ -198,7 +198,7 @@ export default function StockAdjustmentsPage() {
   const actions: DosAction[] = [
     {
       keyLabel: 'F5',
-      label: activeTab === 'RECONCILE' ? 'Commit Audit' : 'Save Rates',
+      label: activeTab === 'RECONCILE' ? 'Save Adjustments' : 'Save Rates',
       variant: 'primary',
       onClick: activeTab === 'RECONCILE' ? handleCommitReconciliation : handleSaveRates,
       disabled: isSubmitting,
@@ -216,15 +216,15 @@ export default function StockAdjustmentsPage() {
   return (
     <div className="flex flex-col h-full bg-brand-paper">
       <DosWindow
-        title={`STOCK ADJUSTMENTS & RATE MODIFICATION (${activeTab === 'RECONCILE' ? 'ADJDTL.PRG' : 'RATEADD.PRG'})`}
-        subtitle="PHYSICAL COUNT RECONCILIATION & DPCO PRICING GOVERNANCE"
-        breadcrumbs={['STOCK', 'ADJUSTMENTS', activeTab]}
+        title="Stock Count Adjustments & Batch Price Setup"
+        subtitle="Physical warehouse audit reconciliation, stock discrepancies & selling rate updates"
+        breadcrumbs={['Stock', 'Adjustments', activeTab === 'RECONCILE' ? 'Physical Stock Audit' : 'Batch Price Setup']}
         actions={actions}
         statusInfo={
           <span className="text-brand-amber font-bold">
             {activeTab === 'RECONCILE'
-              ? `DISCREPANCIES: ${discrepanciesCount}`
-              : `BATCH: ${activeBatchObj?.batchNo || 'NONE'}`}
+              ? `Discrepancies: ${discrepanciesCount}`
+              : `Batch: ${activeBatchObj?.batchNo || 'None'}`}
           </span>
         }
       >
@@ -259,7 +259,7 @@ export default function StockAdjustmentsPage() {
                   : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
               }`}
             >
-              [1. PHYSICAL COUNT RECONCILIATION (ADJDTL.PRG)]
+              [1. Physical Stock Count & Reconciliation]
             </button>
             <button
               type="button"
@@ -270,7 +270,7 @@ export default function StockAdjustmentsPage() {
                   : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
               }`}
             >
-              [2. BATCH RATE MODIFICATION (RATEADD.PRG)]
+              [2. Batch Selling Rates & MRP Setup]
             </button>
           </div>
 
@@ -296,7 +296,7 @@ export default function StockAdjustmentsPage() {
 
               {/* Disposition Rule Notice */}
               <div className="bg-blue-50 border border-blue-300 p-1.5 text-blue-900 text-[11px]">
-                <strong>Disposition Routing Rules:</strong> Deficits marked <em>DAMAGE</em> or <em>EXPIRED</em> are moved to non-saleable quarantine. Deficits marked <em>THEFT_SHRINK</em> or <em>LAB_LOSS</em> are written off. Excesses marked <em>FOUND</em> are added to active stock.
+                <strong>Adjustment Guidelines:</strong> Shortages marked <em>Damage</em> or <em>Expired</em> are transferred to quarantine stock. Shortages marked <em>Shrinkage</em> or <em>Lab Sample</em> are written off. Excess stock marked <em>Found</em> is added to active saleable inventory.
               </div>
 
               <div className="flex-1 border border-brand-border overflow-auto bg-white min-h-48">
@@ -304,13 +304,13 @@ export default function StockAdjustmentsPage() {
                   <thead className="sticky top-0 bg-brand-ink text-white z-10">
                     <tr>
                       <th className="w-8 px-1 py-1 text-center">#</th>
-                      <th className="w-20 px-2 py-1 text-left">CODE</th>
+                      <th className="w-20 px-2 py-1 text-left">ITEM CODE</th>
                       <th className="px-2 py-1 text-left">PRODUCT NAME</th>
-                      <th className="w-24 px-2 py-1 text-center">BATCH</th>
+                      <th className="w-24 px-2 py-1 text-center">BATCH NO</th>
                       <th className="w-20 px-2 py-1 text-right">SYSTEM QTY</th>
                       <th className="w-24 px-2 py-1 text-right">PHYSICAL COUNT</th>
                       <th className="w-20 px-2 py-1 text-right">VARIANCE</th>
-                      <th className="w-36 px-2 py-1 text-left">REASON CODE</th>
+                      <th className="w-36 px-2 py-1 text-left">ADJUSTMENT REASON</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -381,21 +381,21 @@ export default function StockAdjustmentsPage() {
                                 >
                                   {isShortage ? (
                                     <>
-                                      <option value="DAMAGE">Damage (Quarantine)</option>
-                                      <option value="EXPIRED">Expired (Quarantine)</option>
-                                      <option value="THEFT_SHRINK">Theft / Shrinkage</option>
-                                      <option value="LAB_LOSS">Lab / Quality Sample</option>
-                                      <option value="DATA_FIX">Data Fix</option>
+                                      <option value="DAMAGE">Damaged Goods (Quarantine)</option>
+                                      <option value="EXPIRED">Expired Stock (Quarantine)</option>
+                                      <option value="THEFT_SHRINK">Stock Shrinkage (Write-off)</option>
+                                      <option value="LAB_LOSS">Lab / Quality Sample (Write-off)</option>
+                                      <option value="DATA_FIX">Counting Correction</option>
                                     </>
                                   ) : (
                                     <>
-                                      <option value="FOUND">Found / Excess Stock</option>
-                                      <option value="DATA_FIX">Data Fix</option>
+                                      <option value="FOUND">Surplus Stock (Add to Stock)</option>
+                                      <option value="DATA_FIX">Counting Correction</option>
                                     </>
                                   )}
                                 </select>
                               ) : (
-                                <span className="text-gray-400">OK (No Discrepancy)</span>
+                                <span className="text-gray-400">Matches System Stock</span>
                               )}
                             </td>
                           </tr>
@@ -409,7 +409,7 @@ export default function StockAdjustmentsPage() {
               {/* Action Bar */}
               <div className="bg-brand-surface border border-brand-border p-2 flex justify-between items-center">
                 <span className="text-gray-600">
-                  Total Discrepancies To Reconcile: <strong>{discrepanciesCount}</strong>
+                  Batches with Stock Discrepancies: <strong>{discrepanciesCount}</strong>
                 </span>
                 <button
                   type="button"
@@ -417,7 +417,7 @@ export default function StockAdjustmentsPage() {
                   disabled={isSubmitting || discrepanciesCount === 0}
                   className="bg-brand-ink text-white font-bold px-6 py-2 border-2 border-black hover:bg-brand-amber disabled:opacity-50"
                 >
-                  {isSubmitting ? 'COMMITTING...' : '[F5: COMMIT PHYSICAL RECONCILIATION]'}
+                  {isSubmitting ? 'SAVING...' : '[F5: APPLY STOCK ADJUSTMENTS]'}
                 </button>
               </div>
             </div>
@@ -427,7 +427,7 @@ export default function StockAdjustmentsPage() {
           {activeTab === 'RATES' && (
             <div className="flex flex-col flex-1 gap-3 max-w-3xl">
               <div className="bg-brand-surface border border-brand-border p-3 grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-brand-ink">Select Batch To Modify:</label>
+                <label className="col-span-4 font-bold text-brand-ink">Select Product Batch:</label>
                 <div className="col-span-8">
                   <select
                     value={selectedBatchId}
@@ -445,7 +445,7 @@ export default function StockAdjustmentsPage() {
                   </select>
                 </div>
 
-                <label className="col-span-4 font-bold text-brand-ink">Cost Purchase Rate (Rs.):</label>
+                <label className="col-span-4 font-bold text-brand-ink">Purchase Cost Rate (₹):</label>
                 <div className="col-span-8">
                   <input
                     type="number"
@@ -457,7 +457,7 @@ export default function StockAdjustmentsPage() {
                   />
                 </div>
 
-                <label className="col-span-4 font-bold text-brand-ink">Standard Selling Rate (Rs.):</label>
+                <label className="col-span-4 font-bold text-brand-ink">Wholesale / Selling Rate (₹):</label>
                 <div className="col-span-8">
                   <input
                     type="number"
@@ -469,7 +469,7 @@ export default function StockAdjustmentsPage() {
                   />
                 </div>
 
-                <label className="col-span-4 font-bold text-brand-ink">Secondary Rate (Rs.):</label>
+                <label className="col-span-4 font-bold text-brand-ink">Special / Secondary Rate (₹):</label>
                 <div className="col-span-8">
                   <input
                     type="number"
@@ -480,7 +480,7 @@ export default function StockAdjustmentsPage() {
                   />
                 </div>
 
-                <label className="col-span-4 font-bold text-brand-ink">Maximum Retail Price (MRP):</label>
+                <label className="col-span-4 font-bold text-brand-ink">Maximum Retail Price - MRP (₹):</label>
                 <div className="col-span-8">
                   <input
                     type="number"
@@ -492,13 +492,13 @@ export default function StockAdjustmentsPage() {
                   />
                 </div>
 
-                <label className="col-span-4 font-bold text-brand-ink">Revision Reason / Authority:</label>
+                <label className="col-span-4 font-bold text-brand-ink">Price Revision Remarks:</label>
                 <div className="col-span-8">
                   <input
                     type="text"
                     value={rateReason}
                     onChange={(e) => setRateReason(e.target.value)}
-                    placeholder="e.g. Manufacturer notification circular"
+                    placeholder="e.g. Price revision as per manufacturer price list"
                     className="w-full bg-white border border-brand-border px-2 py-1"
                   />
                 </div>
@@ -506,16 +506,16 @@ export default function StockAdjustmentsPage() {
 
               {/* Invariant Validator Status */}
               <div className="border border-brand-border p-3 bg-white">
-                <span className="font-bold text-brand-ink block mb-2">PRICING INVARIANT COMPLIANCE CHECK:</span>
+                <span className="font-bold text-brand-ink block mb-2">PRICING VALIDATION CHECK:</span>
                 <ul className="flex flex-col gap-1 text-[11px]">
                   <li className={editPurchaseRate > 0 ? 'text-green-700 font-bold' : 'text-red-700 font-bold'}>
-                    ✓ Purchase Rate &gt; 0: Rs. {editPurchaseRate.toFixed(2)}
+                    ✓ Purchase Rate &gt; 0: ₹ {editPurchaseRate.toFixed(2)}
                   </li>
                   <li className={editSellingRate >= editPurchaseRate ? 'text-green-700 font-bold' : 'text-red-700 font-bold'}>
-                    {editSellingRate >= editPurchaseRate ? '✓' : '✗'} Non-Negative Margin (Selling Rate &gt;= Purchase Rate): Margin Rs. {(editSellingRate - editPurchaseRate).toFixed(2)}
+                    {editSellingRate >= editPurchaseRate ? '✓' : '✗'} Non-Negative Margin (Selling Rate &gt;= Purchase Rate): Margin ₹ {(editSellingRate - editPurchaseRate).toFixed(2)}
                   </li>
                   <li className={editMrp >= editSellingRate ? 'text-green-700 font-bold' : 'text-red-700 font-bold'}>
-                    {editMrp >= editSellingRate ? '✓' : '✗'} Statutory DPCO Ceiling (MRP &gt;= Selling Rate): Ceiling headroom Rs. {(editMrp - editSellingRate).toFixed(2)}
+                    {editMrp >= editSellingRate ? '✓' : '✗'} Maximum Retail Price (MRP &gt;= Selling Rate): Ceiling headroom ₹ {(editMrp - editSellingRate).toFixed(2)}
                   </li>
                 </ul>
               </div>
@@ -527,7 +527,7 @@ export default function StockAdjustmentsPage() {
                   disabled={isSubmitting || editSellingRate > editMrp || editSellingRate < editPurchaseRate}
                   className="bg-brand-ink text-white font-bold px-8 py-2 border-2 border-black hover:bg-brand-amber cursor-pointer disabled:opacity-50"
                 >
-                  {isSubmitting ? 'SAVING...' : '[F5: SAVE BATCH RATES & AUDIT LOG]'}
+                  {isSubmitting ? 'SAVING...' : '[F5: SAVE BATCH RATES]'}
                 </button>
               </div>
             </div>

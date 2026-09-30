@@ -162,15 +162,15 @@ export default function PurchaseInwardPage() {
   const handleSubmitGRN = async () => {
     setErrorMessage(null);
     if (!selectedSupplierId) {
-      setErrorMessage('Supplier is required');
+      setErrorMessage('Please select a supplier.');
       return;
     }
     if (!supplierBillNo.trim()) {
-      setErrorMessage('Supplier Bill No is required');
+      setErrorMessage('Please enter the supplier invoice / bill number.');
       return;
     }
     if (lines.length === 0) {
-      setErrorMessage('Add at least 1 inward item');
+      setErrorMessage('Please add at least one product item to inward.');
       return;
     }
 
@@ -198,10 +198,10 @@ export default function PurchaseInwardPage() {
         setLines([]);
         setSupplierBillNo('');
       } else {
-        setErrorMessage(res.error || 'Failed to save purchase inward');
+        setErrorMessage(res.error || 'Unable to save purchase inward record.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Error processing purchase inward');
+      setErrorMessage(err.message || 'Error processing purchase inward record.');
     } finally {
       setIsSubmitting(false);
     }
@@ -210,7 +210,7 @@ export default function PurchaseInwardPage() {
   const actions: DosAction[] = [
     {
       keyLabel: 'F2',
-      label: 'Search Item',
+      label: 'Add Product',
       onClick: () => setShowProductSearch(true),
     },
     {
@@ -228,7 +228,7 @@ export default function PurchaseInwardPage() {
     },
     {
       keyLabel: 'F12',
-      label: 'Clear',
+      label: 'Clear All',
       variant: 'danger',
       onClick: () => setLines([]),
     },
@@ -240,11 +240,14 @@ export default function PurchaseInwardPage() {
       {showOperatorModal && (
         <DosModal
           isOpen={true}
-          onClose={() => {}}
-          title="STOCKS INWARD OPERATOR"
+          onClose={() => {
+            if (!operator.trim()) setOperator('ADMIN');
+            setShowOperatorModal(false);
+          }}
+          title="PURCHASE INWARD OPERATOR"
           width="max-w-md"
           confirmText="[Enter: Confirm]"
-          cancelText=""
+          cancelText="[ESC: Dismiss]"
           onConfirm={() => {
             if (!operator.trim()) setOperator('ADMIN');
             setShowOperatorModal(false);
@@ -252,7 +255,7 @@ export default function PurchaseInwardPage() {
         >
           <div className="flex flex-col gap-3 font-mono text-xs">
             <div className="bg-[#00AAAA] text-black font-bold p-2 text-center border border-black">
-              STOCKS ENTERED BY █
+              OPERATOR VERIFICATION █
             </div>
             <div className="flex items-center gap-2">
               <label className="font-bold text-brand-ink">OPERATOR INITIALS:</label>
@@ -260,6 +263,12 @@ export default function PurchaseInwardPage() {
                 type="text"
                 value={operator}
                 onChange={(e) => setOperator(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (!operator.trim()) setOperator('ADMIN');
+                    setShowOperatorModal(false);
+                  }
+                }}
                 placeholder="ADMIN"
                 className="w-full bg-white border border-brand-border px-2 py-1 font-bold uppercase focus:outline-brand-amber"
                 autoFocus
@@ -271,13 +280,13 @@ export default function PurchaseInwardPage() {
 
       {/* Main Window */}
       <DosWindow
-        title="PRODUCT PURCHASE ENTRY SCREEN (PURCHASE.PRG / PURTRA.PRG)"
-        subtitle={`OPERATOR: ${operator || 'ADMIN'} | GRN INWARD`}
-        breadcrumbs={['STOCK', 'PURCHASE INWARD GRN']}
+        title="Purchase Inward (GRN Entry)"
+        subtitle={`Operator: ${operator || 'ADMIN'} | Goods Receipt Note (GRN)`}
+        breadcrumbs={['Stock', 'Purchase Inward (GRN)']}
         actions={actions}
         statusInfo={
           <span className="text-brand-amber font-bold">
-            ITEMS: {lines.length} | TOTAL INWARD: ₹ {grandTotal.toFixed(2)}
+            Items: {lines.length} | Inward Total: ₹ {grandTotal.toFixed(2)}
           </span>
         }
       >
@@ -314,7 +323,7 @@ export default function PurchaseInwardPage() {
             </div>
 
             <div className="col-span-3 flex items-center gap-1">
-              <label className="font-bold text-brand-ink whitespace-nowrap">Pur.Inv.No:</label>
+              <label className="font-bold text-brand-ink whitespace-nowrap">Supplier Bill No:</label>
               <input
                 type="text"
                 value={supplierBillNo}
@@ -352,7 +361,7 @@ export default function PurchaseInwardPage() {
                 onChange={(e) => setPaymentTerms(e.target.value as any)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5 font-bold"
               >
-                <option value="CREDIT">Credit (AP Balance)</option>
+                <option value="CREDIT">Credit (Supplier Account)</option>
                 <option value="CASH">Cash Inward</option>
               </select>
             </div>
@@ -374,7 +383,7 @@ export default function PurchaseInwardPage() {
                 onChange={(e) => setIsInterstate(e.target.value === 'O')}
                 className="w-full bg-white border border-brand-border px-1 py-0.5"
               >
-                <option value="L">Local (CGST+SGST)</option>
+                <option value="L">Local (CGST + SGST)</option>
                 <option value="O">Interstate (IGST)</option>
               </select>
             </div>
@@ -397,18 +406,18 @@ export default function PurchaseInwardPage() {
               <thead className="sticky top-0 bg-brand-ink text-white z-10">
                 <tr>
                   <th className="w-8 px-1 py-1 text-center">#</th>
-                  <th className="w-20 px-2 py-1 text-left">CODE</th>
+                  <th className="w-20 px-2 py-1 text-left">ITEM CODE</th>
                   <th className="px-2 py-1 text-left">PRODUCT NAME</th>
-                  <th className="w-24 px-2 py-1 text-center">BATCH</th>
-                  <th className="w-20 px-2 py-1 text-center">EXPY (MM/YY)</th>
+                  <th className="w-24 px-2 py-1 text-center">BATCH NO</th>
+                  <th className="w-20 px-2 py-1 text-center">EXPIRY (MM/YY)</th>
                   <th className="w-14 px-2 py-1 text-right">QTY</th>
                   <th className="w-14 px-2 py-1 text-right">FREE</th>
-                  <th className="w-20 px-2 py-1 text-right">P.RATE</th>
+                  <th className="w-20 px-2 py-1 text-right">PUR. RATE</th>
                   <th className="w-16 px-2 py-1 text-right">MARGIN%</th>
-                  <th className="w-20 px-2 py-1 text-right">S.RATE</th>
+                  <th className="w-20 px-2 py-1 text-right">SEL. RATE</th>
                   <th className="w-20 px-2 py-1 text-right">MRP</th>
                   <th className="w-16 px-2 py-1 text-right">DISC%</th>
-                  <th className="w-24 px-2 py-1 text-right">VALUE</th>
+                  <th className="w-24 px-2 py-1 text-right">TAXABLE VALUE</th>
                   <th className="w-8 px-1 py-1 text-center">DEL</th>
                 </tr>
               </thead>
@@ -423,7 +432,7 @@ export default function PurchaseInwardPage() {
                           onClick={() => setShowProductSearch(true)}
                           className="bg-brand-ink text-white px-3 py-1 font-bold hover:bg-brand-amber cursor-pointer"
                         >
-                          [F2: Press to Search & Inward Products]
+                          [F2: Press to Search & Add Products]
                         </button>
                       </div>
                     </td>
@@ -604,7 +613,7 @@ export default function PurchaseInwardPage() {
             <div className="flex items-center gap-6">
               <div className="text-right">
                 <span className="text-xs text-gray-500 block uppercase">
-                  Net Inward Payable (Incl GST)
+                  Total Inward Amount (Incl. Est. GST)
                 </span>
                 <span className="text-xl font-bold text-brand-amber">₹ {grandTotal.toFixed(2)}</span>
               </div>
@@ -614,7 +623,7 @@ export default function PurchaseInwardPage() {
                 disabled={isSubmitting || lines.length === 0}
                 className="bg-brand-ink text-white font-bold px-6 py-2 border-2 border-black hover:bg-brand-amber disabled:opacity-50"
               >
-                {isSubmitting ? 'COMMITTING...' : '[F5: COMMIT STOCKS & ACCOUNTS PAYABLE]'}
+                {isSubmitting ? 'SAVING GRN...' : '[F5: SAVE GRN & UPDATE STOCK]'}
               </button>
             </div>
           </div>
@@ -644,7 +653,7 @@ export default function PurchaseInwardPage() {
         <DosModal
           isOpen={true}
           onClose={() => setGrnSuccess(null)}
-          title="PURCHASE INWARD COMMITTED"
+          title="PURCHASE INWARD SAVED"
           width="max-w-md"
           confirmText="[Enter: OK]"
           cancelText=""
@@ -652,7 +661,7 @@ export default function PurchaseInwardPage() {
         >
           <div className="flex flex-col gap-2 font-mono text-xs text-center py-2">
             <div className="bg-green-100 text-green-900 p-2 font-bold border border-green-400">
-              STOCKS ADDED & ACCOUNTS PAYABLE CREDITED
+              INVENTORY UPDATED & SUPPLIER ACCOUNT CREDITED
             </div>
             <div className="text-base font-bold text-brand-ink">
               GRN NO: {grnSuccess.inwardNo}
