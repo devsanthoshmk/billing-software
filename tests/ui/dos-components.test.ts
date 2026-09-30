@@ -14,16 +14,19 @@ describe('Feature F14: Terminal Brutalism UI Component Shell', () => {
   describe('1. DosWindow Component (T1-F14-01)', () => {
     it('renders with 0-radius brutalist frame, title bar, and actions', () => {
       const html = renderToStaticMarkup(
-        React.createElement(DosWindow, {
-          title: 'Product Master',
-          subtitle: '[SYS-1]',
-          breadcrumbs: ['MASTERS', 'PRODUCTS'],
-          actions: [
-            { keyLabel: 'F1', label: 'Help' },
-            { keyLabel: 'F2', label: 'Save', variant: 'amber' },
-          ],
-          children: React.createElement('div', { id: 'test-canvas' }, 'Canvas Content'),
-        })
+        React.createElement(
+          DosWindow,
+          {
+            title: 'Product Master',
+            subtitle: '[SYS-1]',
+            breadcrumbs: ['MASTERS', 'PRODUCTS'],
+            actions: [
+              { keyLabel: 'F1', label: 'Help' },
+              { keyLabel: 'F2', label: 'Save', variant: 'amber' },
+            ],
+          },
+          React.createElement('div', { id: 'test-canvas' }, 'Canvas Content')
+        )
       );
 
       // Verify Title & Subtitle
@@ -114,15 +117,18 @@ describe('Feature F14: Terminal Brutalism UI Component Shell', () => {
   describe('3. DosModal Component (T1-F14-03, T2-F14-03)', () => {
     it('renders modal dialog with aria attributes, brutalist border, and cancel/confirm buttons', () => {
       const html = renderToStaticMarkup(
-        React.createElement(DosModal, {
-          isOpen: true,
-          onClose: () => {},
-          title: 'CONFIRM DELETE',
-          confirmText: '[Enter: Confirm]',
-          cancelText: '[ESC: Cancel]',
-          onConfirm: () => {},
-          children: React.createElement('p', null, 'Delete confirmation body'),
-        })
+        React.createElement(
+          DosModal,
+          {
+            isOpen: true,
+            onClose: () => {},
+            title: 'CONFIRM DELETE',
+            confirmText: '[Enter: Confirm]',
+            cancelText: '[ESC: Cancel]',
+            onConfirm: () => {},
+          },
+          React.createElement('p', null, 'Delete confirmation body')
+        )
       );
 
       expect(html).toContain('role="dialog"');
@@ -136,12 +142,15 @@ describe('Feature F14: Terminal Brutalism UI Component Shell', () => {
 
     it('renders null when isOpen is false', () => {
       const html = renderToStaticMarkup(
-        React.createElement(DosModal, {
-          isOpen: false,
-          onClose: () => {},
-          title: 'HIDDEN MODAL',
-          children: 'Hidden content',
-        })
+        React.createElement(
+          DosModal,
+          {
+            isOpen: false,
+            onClose: () => {},
+            title: 'HIDDEN MODAL',
+          },
+          'Hidden content'
+        )
       );
 
       expect(html).toBe('');
@@ -183,6 +192,74 @@ describe('Feature F14: Terminal Brutalism UI Component Shell', () => {
       expect(html).toContain('User: ADMIN');
       expect(html).toContain('Date: 28/09/2026');
       expect(html).toContain('F1=Help  F3=Del  Esc=Back');
+    });
+  });
+
+  describe('6. Home Dashboard & Full Route Navigation Registry', () => {
+    it('contains all 6 core business modules and sub-routes in NAV_MODULES', async () => {
+      const { NAV_MODULES } = await import('../../src/components/layout/Sidebar');
+      expect(NAV_MODULES.length).toBe(6);
+      
+      const moduleIds = NAV_MODULES.map((m) => m.id);
+      expect(moduleIds).toContain('billing');
+      expect(moduleIds).toContain('masters');
+      expect(moduleIds).toContain('stock');
+      expect(moduleIds).toContain('reports');
+      expect(moduleIds).toContain('accounts');
+      expect(moduleIds).toContain('system');
+
+      // Verify sub-routes existence
+      const allSubRoutes = NAV_MODULES.flatMap((m) => m.subRoutes);
+      expect(allSubRoutes.length).toBeGreaterThanOrEqual(30);
+
+      const paths = allSubRoutes.map((r) => r.path);
+      expect(paths).toContain('/billing');
+      expect(paths).toContain('/billing/reprint');
+      expect(paths).toContain('/billing/delivery-challan');
+      expect(paths).toContain('/billing/returns');
+      expect(paths).toContain('/billing/notes');
+      expect(paths).toContain('/billing/cancel');
+      expect(paths).toContain('/billing/party-balance');
+
+      expect(paths).toContain('/masters/products');
+      expect(paths).toContain('/masters/customers');
+      expect(paths).toContain('/masters/suppliers');
+      expect(paths).toContain('/masters/auxiliary');
+      expect(paths).toContain('/masters/price-lists');
+      expect(paths).toContain('/masters/address-labels');
+
+      expect(paths).toContain('/stock/purchase');
+      expect(paths).toContain('/stock/returns');
+      expect(paths).toContain('/stock/adjustments');
+      expect(paths).toContain('/stock/transfers');
+      expect(paths).toContain('/stock/rack-management');
+      expect(paths).toContain('/stock/multi-mrp');
+      expect(paths).toContain('/stock/claims');
+      expect(paths).toContain('/stock/hsn-mapping');
+
+      expect(paths).toContain('/reports/daily-sales');
+      expect(paths).toContain('/reports/stock');
+      expect(paths).toContain('/reports/expiry');
+      expect(paths).toContain('/reports/companies');
+      expect(paths).toContain('/reports/salesmen');
+      expect(paths).toContain('/reports/gst');
+      expect(paths).toContain('/reports/gst/export');
+      expect(paths).toContain('/reports/stock-movement');
+      expect(paths).toContain('/reports/comparative');
+
+      expect(paths).toContain('/accounts/receipts');
+      expect(paths).toContain('/accounts/payments');
+      expect(paths).toContain('/accounts/cheques');
+      expect(paths).toContain('/accounts/ageing');
+      expect(paths).toContain('/accounts/on-account');
+
+      expect(paths).toContain('/system/day-end');
+      expect(paths).toContain('/system/month-end');
+      expect(paths).toContain('/system/backup');
+      expect(paths).toContain('/system/recalculate');
+      expect(paths).toContain('/system/tally-export');
+      expect(paths).toContain('/system/diagnostics');
+      expect(paths).toContain('/system/supervisor');
     });
   });
 });

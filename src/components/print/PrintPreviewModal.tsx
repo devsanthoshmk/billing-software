@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { DosModal } from '@/components/ui/DosModal';
 import { PrintInvoiceData, formatThermalReceipt40, formatDotMatrixInvoice80 } from '@/lib/print';
 
@@ -21,17 +21,20 @@ export function PrintPreviewModal({
   const [copyFeedback, setCopyFeedback] = useState(false);
 
   useEffect(() => {
-    setFormat(initialFormat);
+    if (isOpen) {
+      setFormat(initialFormat);
+    }
   }, [initialFormat, isOpen]);
 
-  if (!invoiceData) return null;
-
-  const asciiText =
-    format === 'thermal-40'
+  const asciiText = useMemo(() => {
+    if (!invoiceData) return '';
+    return format === 'thermal-40'
       ? formatThermalReceipt40(invoiceData)
       : formatDotMatrixInvoice80(invoiceData);
+  }, [format, invoiceData]);
 
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
+    if (!invoiceData) return;
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) return;
 
@@ -54,16 +57,19 @@ export function PrintPreviewModal({
             }
           </style>
         </head>
-        <body>${asciiText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</body>
+        <body>${asciiText}</body>
       </html>
     `);
     printWindow.document.close();
     printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  }, [asciiText, format, invoiceData]);
 
-  const handleDownloadPrn = () => {
+  const handleDownloadPrn = useCallback(() => {
+    if (!invoiceData) return;
     const rawData =
       format === 'thermal-40'
         ? formatThermalReceipt40(invoiceData, { rawEscPos: true })
@@ -78,9 +84,9 @@ export function PrintPreviewModal({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
+  }, [format, invoiceData]);
 
-  const handleCopyText = async () => {
+  const handleCopyText = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(asciiText);
       setCopyFeedback(true);
@@ -88,11 +94,11 @@ export function PrintPreviewModal({
     } catch (e) {
       console.error('Failed to copy print text', e);
     }
-  };
+  }, [asciiText]);
 
   // Keyboard shortcut listener for F2, F3, F4, 1, 2
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !invoiceData) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'F2') {
@@ -113,7 +119,9 @@ export function PrintPreviewModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, format, invoiceData, asciiText]);
+  }, [isOpen, invoiceData, handlePrint, handleDownloadPrn, handleCopyText]);
+
+  if (!invoiceData) return null;
 
   return (
     <DosModal

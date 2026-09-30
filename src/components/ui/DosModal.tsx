@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useId } from 'react';
 import { DosAction } from './DosWindow';
 
 export interface DosModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   width?: string;                        // e.g. "max-w-md", "max-w-xl", "max-w-3xl", "max-w-5xl"
   actions?: DosAction[];                 // Custom action hotkeys in footer
   confirmText?: string;                  // Default "[Enter: Confirm]"
@@ -35,7 +35,8 @@ export function DosModal({
   variant = 'default',
   closeOnBackdropClick = false,
 }: DosModalProps) {
-  const modalIdRef = useRef<string>(`modal-${Math.random().toString(36).substring(2, 9)}`);
+  const generatedId = useId();
+  const modalId = `modal-${generatedId}`;
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -43,7 +44,6 @@ export function DosModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    const modalId = modalIdRef.current;
     activeModalStack.push(modalId);
     previouslyFocusedElementRef.current = document.activeElement as HTMLElement;
 
@@ -74,7 +74,7 @@ export function DosModal({
       }
       clearTimeout(timer);
     };
-  }, [isOpen, initialFocusRef]);
+  }, [isOpen, initialFocusRef, modalId]);
 
   // Escape key & Focus Trap listener
   useEffect(() => {
@@ -83,7 +83,7 @@ export function DosModal({
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only the top-most modal processes Escape and Tab
       const topModalId = activeModalStack[activeModalStack.length - 1];
-      if (topModalId !== modalIdRef.current) return;
+      if (topModalId !== modalId) return;
 
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -201,13 +201,15 @@ export function DosModal({
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-3 py-1 bg-white border border-brand-border hover:bg-gray-100 font-mono text-xs font-bold text-brand-text cursor-pointer"
-            >
-              {cancelText}
-            </button>
+            {cancelText && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-3 py-1 bg-white border border-brand-border hover:bg-gray-100 font-mono text-xs font-bold text-brand-text cursor-pointer"
+              >
+                {cancelText}
+              </button>
+            )}
             {onConfirm && (
               <button
                 type="button"

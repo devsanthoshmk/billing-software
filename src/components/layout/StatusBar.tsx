@@ -10,10 +10,10 @@ export interface StatusBarProps {
 }
 
 export function StatusBar({
-  nodeId = 'SYS-1',
+  nodeId = 'Counter 1',
   user = 'ADMIN',
   systemDate = '28/09/2026',
-  hotkeyHints = 'F1=Help  F3=Del  Esc=Back',
+  hotkeyHints = 'F1=Help  F3=Delete  Esc=Back',
 }: StatusBarProps) {
   return (
     <footer

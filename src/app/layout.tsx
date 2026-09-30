@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Siva Pharmacy ERP",
-  description: "Dense, keyboard-first pharmacy ERP system",
+  title: "MediSys — a Pharmaceutical ERP",
+  description: "MediSys — a Pharmaceutical ERP",
 };
 
 export default function RootLayout({

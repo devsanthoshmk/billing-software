@@ -18,7 +18,7 @@ export interface DosWindowProps {
   actions?: DosAction[];                 // Action hotkeys rendered in the action bar
   statusInfo?: React.ReactNode;          // Right-aligned status information (e.g. record counter)
   headerExtra?: React.ReactNode;         // Inline header utilities (e.g. quick search or filter toggle)
-  children: React.ReactNode;             // Window content canvas
+  children?: React.ReactNode;            // Window content canvas
   className?: string;                    // Additional classes for root container
   bodyClassName?: string;                // Additional classes for content canvas
   bordered?: boolean;                    // Outer 2px wireframe border (default: true)

@@ -38,13 +38,18 @@ export function useKeyboardShortcuts(
 ) {
   const { enabled = true, scopeId = 'default', priority = 10 } = options;
   const shortcutsRef = useRef<ShortcutHandler[]>(shortcuts);
-  shortcutsRef.current = shortcuts;
+
+  useEffect(() => {
+    shortcutsRef.current = shortcuts;
+  }, [shortcuts]);
 
   useEffect(() => {
     if (!enabled) return;
 
+    shortcutsRef.current = shortcuts;
+
     // Register handlers into global registry
-    const entries: RegisteredEntry[] = shortcutsRef.current
+    const entries: RegisteredEntry[] = shortcuts
       .filter((h) => h.enabled !== false)
       .map((handler, idx) => ({
         id: `${scopeId}-${idx}-${handler.key}`,
