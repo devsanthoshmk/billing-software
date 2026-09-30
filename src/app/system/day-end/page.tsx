@@ -136,7 +136,7 @@ export default function DayEndClosingPage() {
 
   return (
     <DosWindow
-      title="DAY-END AUDIT & DATE ADVANCEMENT ROUTINE [DAYEND1.PRG]"
+      title="Day-End Cash & Register Closing"
       breadcrumbs={['SYSTEM', 'DAY-END CLOSING']}
       actions={[
         { keyLabel: 'F1', label: 'Closing Routine', onClick: () => setActiveTab('closing') },
@@ -156,7 +156,7 @@ export default function DayEndClosingPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [F1] EXECUTE DAILY CLOSING
+            [F1] DAY-END CLOSING
           </button>
           <button
             type="button"
@@ -167,7 +167,7 @@ export default function DayEndClosingPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [F2] CLOSING AUDIT HISTORY ({history.length})
+            [F2] CLOSING HISTORY ({history.length})
           </button>
         </div>
 
@@ -210,7 +210,7 @@ export default function DayEndClosingPage() {
               )}
             </div>
 
-            {/* Unfinalized Drafts Warning (FoxPro sinv1..6 parity) */}
+            {/* Unfinalized Drafts Warning */}
             {preview && preview.unfinalizedDraftsCount > 0 && (
               <div className="p-3 bg-red-600 text-white border-2 border-red-800 flex flex-col gap-1 shadow-md">
                 <div className="flex items-center gap-2 font-bold text-sm">
@@ -218,9 +218,9 @@ export default function DayEndClosingPage() {
                   <span>{preview.unfinalizedDraftsCount} Draft(s) Pending</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
-                  The following bills remain in draft status on {closingDate}:{' '}
+                  The following invoices remain in draft status on {closingDate}:{' '}
                   <span className="underline font-mono">{preview.draftInvoiceNumbers.join(', ')}</span>.
-                  In accordance with FoxPro DAYEND1 security rules, Day-End Closing is blocked until drafts are finalized or discarded. Supervisor password override is required to bypass.
+                  Finalize or cancel these drafts before closing the day, or provide supervisor authorization to proceed.
                 </p>
               </div>
             )}
@@ -509,14 +509,14 @@ export default function DayEndClosingPage() {
         <DosModal
           isOpen={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
-          title="CONFIRM FINAL DAY-END CLOSING & TRANSACTION FREEZE"
+          title="CONFIRM DAY-END CLOSING"
           variant="danger"
           confirmText="[Enter: Confirm & Lock]"
           onConfirm={handleExecuteClosing}
         >
           <div className="flex flex-col gap-3">
             <p className="text-sm font-bold text-red-700">
-              WARNING: Day-End Closing is an atomic, immutable financial milestone!
+              Notice: Executing Day-End Closing finalizes daily registers and advances the business date.
             </p>
             <ul className="list-disc pl-4 text-xs text-gray-800 space-y-1">
               <li>All sales invoices, purchase inwards, returns, and collections for {closingDate} will be permanently locked against modification.</li>

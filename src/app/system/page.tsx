@@ -13,40 +13,72 @@ export default function SystemHubPage() {
     {
       num: '1',
       hotkey: 'F1',
-      title: 'DAY-END AUDIT & DATE ADVANCEMENT [DAYEND1]',
-      desc: 'Verify unfinalized drafts, reconcile physical drawer cash, freeze daily transactions, and advance working date.',
+      title: 'Day-End Cash & Register Closing',
+      desc: 'Verify draft vouchers, reconcile physical drawer cash, finalize daily registers, and advance the business date.',
       href: '/system/day-end',
-      badge: 'CRITICAL DAILY ROUTINE',
+      badge: 'DAILY ROUTINE',
     },
     {
       num: '2',
       hotkey: 'F2',
-      title: 'DAY-END CLOSING AUDIT HISTORY [DAYEND2]',
-      desc: 'Historical closing logs, verified turnovers, cashier balances, and supervisor variance notes.',
-      href: '/system/day-end?tab=history',
-      badge: 'AUDIT LOGS',
+      title: 'Month-End Accounting Period Lock',
+      desc: 'Lock all financial vouchers in the calendar period to prevent unauthorized retroactive edits.',
+      href: '/system/month-end',
+      badge: 'PERIOD CLOSING',
     },
     {
       num: '3',
       hotkey: 'F3',
-      title: 'FINANCIAL ACCOUNTS & PARTY LEDGERS [PARMENU]',
-      desc: 'Customer collections, supplier disbursements, cheque registers, and bill-by-bill adjustments.',
-      href: '/accounts',
-      badge: 'FINANCIAL LEDGERS',
+      title: 'Database Backup & Archive',
+      desc: 'Create instant database snapshots, verify data backups, and manage archive storage.',
+      href: '/system/backup',
+      badge: 'DATA BACKUP',
     },
     {
       num: '4',
       hotkey: 'F4',
-      title: 'BUSINESS REPORTS & STATUTORY FILINGS [REPMENU]',
-      desc: 'Daily sales abstracts, closing stock statements, expiry lists, and GSTR-1/3B statutory schedules.',
-      href: '/reports',
-      badge: 'REPORTING HUB',
+      title: 'Stock & Balance Recalculation',
+      desc: 'Recalculate batch inventory levels and customer ledger balances from transaction records.',
+      href: '/system/recalculate',
+      badge: 'LEDGER AUDIT',
+    },
+    {
+      num: '5',
+      hotkey: 'F5',
+      title: 'Tally Prime Accounting Export',
+      desc: 'Export daily sales, collections, and GST tax vouchers formatted for Tally Prime import.',
+      href: '/system/tally-export',
+      badge: 'ACCOUNTING EXPORT',
+    },
+    {
+      num: '6',
+      hotkey: 'F6',
+      title: 'System Health & Integrity Check',
+      desc: 'Run data consistency audits, identify orphaned records, and check table record totals.',
+      href: '/system/diagnostics',
+      badge: 'SYSTEM HEALTH',
+    },
+    {
+      num: '7',
+      hotkey: 'F7',
+      title: 'Supervisor Security & Policy Settings',
+      desc: 'Manage drug license validation rules, credit limit enforcement, and supervisor approval policies.',
+      href: '/system/supervisor',
+      badge: 'SECURITY POLICY',
+    },
+    {
+      num: '8',
+      hotkey: 'F8',
+      title: 'Day-End Closing History & Logs',
+      desc: 'Review historical closing records, finalized sales turnover, cashier totals, and supervisor notes.',
+      href: '/system/day-end?tab=history',
+      badge: 'AUDIT LOGS',
     },
   ];
 
   return (
     <DosWindow
-      title="SYSTEM CONTROL & DAY-END CLOSING MENU [SYMENU]"
+      title="System Administration & Maintenance"
       breadcrumbs={['MAIN MENU', 'SYSTEM UTILITIES']}
     >
       <div className="flex flex-col gap-6">
@@ -54,17 +86,17 @@ export default function SystemHubPage() {
         <div className="p-4 bg-brand-surface border border-brand-border grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-              CURRENT WORKING BUSINESS DATE
+              CURRENT WORKING DATE
             </span>
             <span className="text-xl font-bold font-mono text-brand-ink">
               {config?.current_working_date || '2026-09-28'}
             </span>
-            <span className="text-[11px] text-green-700 font-bold block mt-1">● Active Operating Session</span>
+            <span className="text-[11px] text-green-700 font-bold block mt-1">● Active Business Day</span>
           </div>
 
           <div>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-              LAST COMPLETED DAY-END CLOSING
+              LAST COMPLETED DAY CLOSING
             </span>
             <span className="text-base font-bold font-mono text-gray-800">
               {lastClosing ? lastClosing.closing_date : 'No prior closing'}
@@ -76,15 +108,15 @@ export default function SystemHubPage() {
 
           <div>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-              SYSTEM INTEGRITY & WAL MODE
+              DATABASE & DATA INTEGRITY
             </span>
-            <span className="text-base font-bold font-mono text-green-700">NORMAL (ACTIVE WAL)</span>
-            <span className="text-[11px] text-gray-500 block mt-1">SQLite Foreign Keys: ENFORCED</span>
+            <span className="text-base font-bold font-mono text-green-700">HEALTHY & ACTIVE</span>
+            <span className="text-[11px] text-gray-500 block mt-1">Integrity Constraints: Active</span>
           </div>
         </div>
 
         {/* Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {systemModules.map((mod) => (
             <Link
               key={mod.num}
@@ -103,11 +135,11 @@ export default function SystemHubPage() {
                 <h3 className="font-mono font-bold text-sm text-brand-ink group-hover:text-brand-amber mb-1">
                   {mod.title}
                 </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{mod.desc}</p>
+                <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">{mod.desc}</p>
               </div>
 
               <div className="mt-4 pt-2 border-t border-gray-100 flex items-center justify-between text-xs font-mono text-brand-ink font-bold">
-                <span>[Hotkey: {mod.hotkey}] OPEN SCREEN</span>
+                <span>[{mod.hotkey}] OPEN</span>
                 <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
               </div>
             </Link>
