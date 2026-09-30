@@ -64,3 +64,164 @@
     letter-spacing: 0.05em;
   }
 }
+
+/* ==========================================================================
+   Global Utilitarian / DOS ERP Scrollbars
+   High-specificity universal cross-browser rules
+   ========================================================================== */
+
+/* Standard CSS (Firefox / W3C standard) */
+html,
+body,
+*,
+*::before,
+*::after {
+  scrollbar-width: thin;
+  scrollbar-color: #9AA0A6 #E8EAED;
+}
+
+/* WebKit / Blink (Chrome, Edge, Safari, Opera) */
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #E8EAED;
+}
+
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background-color: #E8EAED;
+  border-left: 1px solid #CBD5E1;
+  border-top: 1px solid #CBD5E1;
+}
+
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background-color: #9AA0A6;
+  border: 1px solid #7E858C;
+  border-radius: 0px !important;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background-color: #0B192C;
+  border-color: #0B192C;
+}
+
+*::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-thumb:active {
+  background-color: #F05A28;
+  border-color: #F05A28;
+}
+
+*::-webkit-scrollbar-corner,
+::-webkit-scrollbar-corner {
+  background-color: #E8EAED;
+}
+
+/* Dark surfaces (Sidebar, Terminal windows, pre, bg-brand-ink, bg-black) */
+aside,
+aside *,
+nav,
+pre,
+pre *,
+.bg-black,
+.bg-black *,
+[class*="bg-black"],
+[class*="bg-black"] *,
+[class*="bg-brand-ink"],
+[class*="bg-brand-ink"] * {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0B192C;
+}
+
+aside::-webkit-scrollbar,
+aside *::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+pre::-webkit-scrollbar,
+pre *::-webkit-scrollbar,
+.bg-black::-webkit-scrollbar,
+.bg-black *::-webkit-scrollbar,
+[class*="bg-black"]::-webkit-scrollbar,
+[class*="bg-black"] *::-webkit-scrollbar,
+[class*="bg-brand-ink"]::-webkit-scrollbar,
+[class*="bg-brand-ink"] *::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: #0B192C;
+}
+
+aside::-webkit-scrollbar-track,
+aside *::-webkit-scrollbar-track,
+nav::-webkit-scrollbar-track,
+pre::-webkit-scrollbar-track,
+pre *::-webkit-scrollbar-track,
+.bg-black::-webkit-scrollbar-track,
+.bg-black *::-webkit-scrollbar-track,
+[class*="bg-black"]::-webkit-scrollbar-track,
+[class*="bg-black"] *::-webkit-scrollbar-track,
+[class*="bg-brand-ink"]::-webkit-scrollbar-track,
+[class*="bg-brand-ink"] *::-webkit-scrollbar-track {
+  background-color: #0B192C;
+  border-left: 1px solid #1E293B;
+  border-top: 1px solid #1E293B;
+}
+
+aside::-webkit-scrollbar-thumb,
+aside *::-webkit-scrollbar-thumb,
+nav::-webkit-scrollbar-thumb,
+pre::-webkit-scrollbar-thumb,
+pre *::-webkit-scrollbar-thumb,
+.bg-black::-webkit-scrollbar-thumb,
+.bg-black *::-webkit-scrollbar-thumb,
+[class*="bg-black"]::-webkit-scrollbar-thumb,
+[class*="bg-black"] *::-webkit-scrollbar-thumb,
+[class*="bg-brand-ink"]::-webkit-scrollbar-thumb,
+[class*="bg-brand-ink"] *::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border: 1px solid #475569;
+  border-radius: 0px !important;
+}
+
+aside::-webkit-scrollbar-thumb:hover,
+aside *::-webkit-scrollbar-thumb:hover,
+nav::-webkit-scrollbar-thumb:hover,
+pre::-webkit-scrollbar-thumb:hover,
+pre *::-webkit-scrollbar-thumb:hover,
+.bg-black::-webkit-scrollbar-thumb:hover,
+.bg-black *::-webkit-scrollbar-thumb:hover,
+[class*="bg-black"]::-webkit-scrollbar-thumb:hover,
+[class*="bg-black"] *::-webkit-scrollbar-thumb:hover,
+[class*="bg-brand-ink"]::-webkit-scrollbar-thumb:hover,
+[class*="bg-brand-ink"] *::-webkit-scrollbar-thumb:hover {
+  background-color: #F05A28;
+  border-color: #F05A28;
+}
+
+aside::-webkit-scrollbar-thumb:active,
+aside *::-webkit-scrollbar-thumb:active,
+nav::-webkit-scrollbar-thumb:active,
+pre::-webkit-scrollbar-thumb:active,
+pre *::-webkit-scrollbar-thumb:active,
+.bg-black::-webkit-scrollbar-thumb:active,
+.bg-black *::-webkit-scrollbar-thumb:active,
+[class*="bg-black"]::-webkit-scrollbar-thumb:active,
+[class*="bg-black"] *::-webkit-scrollbar-thumb:active,
+[class*="bg-brand-ink"]::-webkit-scrollbar-thumb:active,
+[class*="bg-brand-ink"] *::-webkit-scrollbar-thumb:active {
+  background-color: #F05A28;
+  border-color: #F05A28;
+}
+
+aside::-webkit-scrollbar-corner,
+aside *::-webkit-scrollbar-corner,
+pre::-webkit-scrollbar-corner,
+pre *::-webkit-scrollbar-corner,
+.bg-black::-webkit-scrollbar-corner,
+.bg-black *::-webkit-scrollbar-corner,
+[class*="bg-black"]::-webkit-scrollbar-corner,
+[class*="bg-black"] *::-webkit-scrollbar-corner,
+[class*="bg-brand-ink"]::-webkit-scrollbar-corner,
+[class*="bg-brand-ink"] *::-webkit-scrollbar-corner {
+  background-color: #0B192C;
+}
