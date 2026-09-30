@@ -92,7 +92,7 @@ export default function SalesReturnsPage() {
       }
 
       if (!batch) {
-        setErrorMessage(`No batches found for ${prod.name}`);
+        setErrorMessage(`No stock batches available for ${prod.name}.`);
         return;
       }
 
@@ -193,11 +193,11 @@ export default function SalesReturnsPage() {
   const handleSubmitReturn = async () => {
     setErrorMessage(null);
     if (lines.length === 0) {
-      setErrorMessage('Add at least 1 return line item.');
+      setErrorMessage('Please add at least one item before saving.');
       return;
     }
     if (!selectedCustomerId) {
-      setErrorMessage('Customer is mandatory.');
+      setErrorMessage('Please select a customer.');
       return;
     }
 
@@ -233,10 +233,10 @@ export default function SalesReturnsPage() {
         });
         setLines([]);
       } else {
-        setErrorMessage(res.error || 'Failed to create sales return');
+        setErrorMessage(res.error || 'Failed to save sales return.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Error processing sales return');
+      setErrorMessage(err.message || 'Error saving sales return.');
     } finally {
       setIsSubmitting(false);
     }
@@ -257,7 +257,7 @@ export default function SalesReturnsPage() {
     },
     {
       keyLabel: 'F12',
-      label: 'Clear',
+      label: 'Clear All',
       variant: 'danger',
       onClick: () => setLines([]),
     },
@@ -266,13 +266,13 @@ export default function SalesReturnsPage() {
   return (
     <div className="flex flex-col h-full bg-brand-paper">
       <DosWindow
-        title="SALES RETURN PREPARATION (SRETPRE.PRG)"
-        subtitle="CREDIT NOTE / RESTOCK & QUARANTINE ROUTING"
-        breadcrumbs={['BILLING', 'SALES RETURNS']}
+        title="SALES RETURNS & CREDIT NOTE"
+        subtitle="PROCESS CUSTOMER RETURNS, CREDIT NOTES, AND REPLACEMENTS"
+        breadcrumbs={['BILLING', 'SALES RETURNS', 'NEW RETURN']}
         actions={actions}
         statusInfo={
           <span className="text-brand-amber font-bold">
-            ITEMS: {lines.length} | CREDIT: ₹ {grandTotal.toFixed(2)}
+            ITEMS: {lines.length} | TOTAL CREDIT: ₹ {grandTotal.toFixed(2)}
           </span>
         }
       >
@@ -286,7 +286,7 @@ export default function SalesReturnsPage() {
           {/* Header */}
           <div className="bg-brand-surface border border-brand-border p-2 grid grid-cols-12 gap-2 items-center">
             <div className="col-span-3 flex items-center gap-1">
-              <label className="font-bold text-brand-ink">Customer:</label>
+              <label className="font-bold text-brand-ink">Customer Name:</label>
               <select
                 value={selectedCustomerId}
                 onChange={(e) => handleSelectCustomer(e.target.value)}
@@ -301,13 +301,13 @@ export default function SalesReturnsPage() {
             </div>
 
             <div className="col-span-3 flex items-center gap-1">
-              <label className="font-bold text-brand-ink whitespace-nowrap">Link Bill:</label>
+              <label className="font-bold text-brand-ink whitespace-nowrap">Original Bill:</label>
               <select
                 value={selectedInvoiceId}
                 onChange={(e) => handleLoadInvoiceItems(e.target.value)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5"
               >
-                <option value="">-- Ad-Hoc Direct Return --</option>
+                <option value="">-- Direct Return (No Bill Linked) --</option>
                 {customerInvoices.map((inv) => (
                   <option key={inv.id} value={inv.id}>
                     {inv.invoiceNo} ({inv.invoiceDate}) - ₹{inv.netAmount}
@@ -350,7 +350,7 @@ export default function SalesReturnsPage() {
                 <option value="EXPIRED">Expired</option>
                 <option value="DAMAGED">Damaged / Broken</option>
                 <option value="EXCESS_STOCK">Excess Stock</option>
-                <option value="RATE_DIFFERENCE">Rate Diff</option>
+                <option value="RATE_DIFFERENCE">Rate Difference</option>
               </select>
             </div>
 
@@ -374,12 +374,12 @@ export default function SalesReturnsPage() {
                   <th className="w-20 px-2 py-1 text-left">CODE</th>
                   <th className="px-2 py-1 text-left">PRODUCT NAME</th>
                   <th className="w-24 px-2 py-1 text-center">BATCH</th>
-                  <th className="w-20 px-2 py-1 text-center">EXPY</th>
+                  <th className="w-20 px-2 py-1 text-center">EXPIRY</th>
                   <th className="w-16 px-2 py-1 text-right">QTY</th>
                   <th className="w-20 px-2 py-1 text-right">RATE</th>
                   <th className="w-20 px-2 py-1 text-right">DISC%</th>
-                  <th className="w-24 px-2 py-1 text-right">VALUE</th>
-                  <th className="w-32 px-2 py-1 text-center">DISPOSITION</th>
+                  <th className="w-24 px-2 py-1 text-right">AMOUNT</th>
+                  <th className="w-32 px-2 py-1 text-center">STOCK ACTION</th>
                   <th className="w-8 px-1 py-1 text-center">DEL</th>
                 </tr>
               </thead>
@@ -388,13 +388,13 @@ export default function SalesReturnsPage() {
                   <tr>
                     <td colSpan={11} className="text-center py-12 text-gray-500 font-bold">
                       <div className="flex flex-col items-center gap-2">
-                        <span>--- NO RETURN ITEMS ENTERED ---</span>
+                        <span>No items added to return</span>
                         <button
                           type="button"
                           onClick={() => setShowProductSearch(true)}
                           className="bg-brand-ink text-white px-3 py-1 font-bold hover:bg-brand-amber cursor-pointer"
                         >
-                          [F2: Search & Add Return Items]
+                          [F2: Search & Add Item]
                         </button>
                       </div>
                     </td>
@@ -485,7 +485,7 @@ export default function SalesReturnsPage() {
                                 : 'bg-red-100 text-red-800 border-red-400'
                             }`}
                           >
-                            {l.restockInventory ? 'RESTOCK SALEABLE' : 'QUARANTINE'}
+                            {l.restockInventory ? 'RESTOCK' : 'QUARANTINE'}
                           </button>
                         </td>
                         <td className="px-1 py-1 text-center">
@@ -493,6 +493,7 @@ export default function SalesReturnsPage() {
                             type="button"
                             onClick={() => setLines((prev) => prev.filter((_, i) => i !== idx))}
                             className="text-red-600 font-bold hover:bg-red-100 px-1"
+                            title="Remove item"
                           >
                             X
                           </button>
@@ -512,12 +513,12 @@ export default function SalesReturnsPage() {
               onClick={() => setShowProductSearch(true)}
               className="bg-brand-paper border border-brand-border px-2 py-1 font-bold text-brand-ink hover:bg-gray-100"
             >
-              [+ Add Product (F2)]
+              [+ Add Item (F2)]
             </button>
 
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <span className="text-xs text-gray-500 block uppercase">Total Return Credit</span>
+                <span className="text-xs text-gray-500 block uppercase">Total Credit Amount</span>
                 <span className="text-xl font-bold text-brand-amber">₹ {grandTotal.toFixed(2)}</span>
               </div>
               <button
@@ -526,7 +527,7 @@ export default function SalesReturnsPage() {
                 disabled={isSubmitting || lines.length === 0}
                 className="bg-brand-ink text-white font-bold px-6 py-2 border-2 border-black hover:bg-brand-amber disabled:opacity-50"
               >
-                {isSubmitting ? 'PROCESSING...' : '[F5: COMMIT RETURN & CREDIT NOTE]'}
+                {isSubmitting ? 'SAVING...' : '[F5: SAVE SALES RETURN]'}
               </button>
             </div>
           </div>
@@ -556,15 +557,15 @@ export default function SalesReturnsPage() {
         <DosModal
           isOpen={true}
           onClose={() => setReturnSuccess(null)}
-          title="SALES RETURN RECORDED"
+          title="SALES RETURN SAVED"
           width="max-w-md"
-          confirmText="[Enter: Prepare Next Return]"
+          confirmText="[Enter: New Return]"
           cancelText="[ESC: Close]"
           onConfirm={() => setReturnSuccess(null)}
         >
           <div className="flex flex-col gap-2 font-mono text-xs text-center py-2">
             <div className="bg-green-100 text-green-900 p-2 font-bold border border-green-400">
-              CREDIT NOTE ISSUED & INVENTORY ROUTED
+              Sales Return Saved Successfully
             </div>
             <div className="text-base font-bold text-brand-ink">
               CREDIT NOTE NO: {returnSuccess.returnNo}
@@ -573,7 +574,7 @@ export default function SalesReturnsPage() {
               AMOUNT: ₹ {returnSuccess.grandTotal.toFixed(2)}
             </div>
             <div className="text-gray-500 text-[11px]">
-              Customer balance credited. Stock segregated according to disposition rules.
+              Customer balance credited and return stock updated.
             </div>
           </div>
         </DosModal>

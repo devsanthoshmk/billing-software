@@ -106,7 +106,7 @@ export default function CreditDebitNotesPage() {
       }
 
       if (!batch) {
-        setErrorMessage(`No batches found for ${prod.name}`);
+        setErrorMessage(`No stock batches available for ${prod.name}.`);
         return;
       }
 
@@ -180,11 +180,11 @@ export default function CreditDebitNotesPage() {
   const handleSubmitNote = async () => {
     setErrorMessage(null);
     if (lines.length === 0) {
-      setErrorMessage('Add at least 1 note item');
+      setErrorMessage('Please add at least one item before saving.');
       return;
     }
     if (!selectedPartyId) {
-      setErrorMessage('Party is mandatory');
+      setErrorMessage('Please select a party.');
       return;
     }
 
@@ -220,10 +220,10 @@ export default function CreditDebitNotesPage() {
         setLines([]);
         refreshRecentNotes();
       } else {
-        setErrorMessage(res.error || 'Failed to create note');
+        setErrorMessage(res.error || 'Failed to save note.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Error processing note');
+      setErrorMessage(err.message || 'Error saving note.');
     } finally {
       setIsSubmitting(false);
     }
@@ -244,7 +244,7 @@ export default function CreditDebitNotesPage() {
     },
     {
       keyLabel: 'F12',
-      label: 'Clear',
+      label: 'Clear All',
       variant: 'danger',
       onClick: () => setLines([]),
     },
@@ -253,9 +253,9 @@ export default function CreditDebitNotesPage() {
   return (
     <div className="flex flex-col h-full bg-brand-paper">
       <DosWindow
-        title={`CREDIT & DEBIT NOTE PROCESSING (${activeTab === 'CREDIT' ? 'EXPBRO.PRG / RATECR.PRG' : 'RATEDB.PRG'})`}
-        subtitle={`VOUCHER MODE: ${activeTab} NOTE`}
-        breadcrumbs={['BILLING', 'NOTES & ADJUSTMENTS', activeTab]}
+        title={activeTab === 'CREDIT' ? 'CREDIT NOTE ENTRY' : 'DEBIT NOTE ENTRY'}
+        subtitle="RATE DIFFERENCE & ADJUSTMENT NOTES"
+        breadcrumbs={['BILLING', 'CREDIT & DEBIT NOTES', activeTab === 'CREDIT' ? 'CREDIT NOTE' : 'DEBIT NOTE']}
         actions={actions}
         statusInfo={
           <span className="text-brand-amber font-bold">
@@ -281,7 +281,7 @@ export default function CreditDebitNotesPage() {
                   : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
               }`}
             >
-              [CREDIT NOTES (CUSTOMER)]
+              Credit Notes (Customer)
             </button>
             <button
               type="button"
@@ -292,7 +292,7 @@ export default function CreditDebitNotesPage() {
                   : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
               }`}
             >
-              [DEBIT NOTES (SUPPLIER)]
+              Debit Notes (Supplier)
             </button>
           </div>
 
@@ -300,7 +300,7 @@ export default function CreditDebitNotesPage() {
           <div className="bg-brand-surface border border-brand-border p-2 grid grid-cols-12 gap-2 items-center">
             <div className="col-span-4 flex items-center gap-1">
               <label className="font-bold text-brand-ink">
-                {activeTab === 'CREDIT' ? 'Customer:' : 'Party / Supplier:'}
+                {activeTab === 'CREDIT' ? 'Customer Name:' : 'Supplier Name:'}
               </label>
               <select
                 value={selectedPartyId}
@@ -330,14 +330,14 @@ export default function CreditDebitNotesPage() {
               >
                 {activeTab === 'CREDIT' ? (
                   <>
-                    <option value="EXPIRY_BROKEN">Expiry / Broken (Quarantine)</option>
-                    <option value="RATE_DIFFERENCE">Rate Difference (Price Drop)</option>
+                    <option value="EXPIRY_BROKEN">Expiry / Breakage</option>
+                    <option value="RATE_DIFFERENCE">Rate Difference</option>
                     <option value="OTHER">Other Credit</option>
                   </>
                 ) : (
                   <>
-                    <option value="SHORTAGE_DAMAGE">Shortage / Transit Damage</option>
-                    <option value="RATE_DIFFERENCE">Rate Difference (Supplier Debit)</option>
+                    <option value="SHORTAGE_DAMAGE">Shortage / Damage</option>
+                    <option value="RATE_DIFFERENCE">Rate Difference</option>
                     <option value="OTHER">Other Debit</option>
                   </>
                 )}
@@ -345,12 +345,12 @@ export default function CreditDebitNotesPage() {
             </div>
 
             <div className="col-span-3 flex items-center gap-1">
-              <label className="font-bold text-brand-ink">Ref Bill No:</label>
+              <label className="font-bold text-brand-ink">Ref Invoice No:</label>
               <input
                 type="text"
                 value={referenceInvoiceNo}
                 onChange={(e) => setReferenceInvoiceNo(e.target.value.toUpperCase())}
-                placeholder="Optional Inv / Challan No"
+                placeholder="Invoice or Challan No (optional)"
                 className="w-full bg-white border border-brand-border px-1.5 py-0.5"
               />
             </div>
@@ -369,13 +369,13 @@ export default function CreditDebitNotesPage() {
           {/* Description banner */}
           <div className="bg-blue-50 border border-blue-300 p-1.5 text-blue-900 text-[11px]">
             {noteType === 'EXPIRY_BROKEN' && (
-              <span>[QUARANTINE POLICY] Expired or damaged units are segregated to quarantine stock and cannot be re-billed. Customer is credited.</span>
+              <span>Expiry / Breakage: Credits the customer and moves expired or damaged items to quarantine stock.</span>
             )}
             {noteType === 'RATE_DIFFERENCE' && (
-              <span>[FINANCIAL ADJUSTMENT] Price drop credit/debit adjustment without inventory movement. Computes (Old Rate - New Rate) * Qty.</span>
+              <span>Rate Difference: Adjusts invoice pricing without moving inventory. Calculates (Old Rate - New Rate) × Qty.</span>
             )}
             {noteType === 'SHORTAGE_DAMAGE' && (
-              <span>[SUPPLIER DEBIT] Issues debit note reducing accounts payable to supplier for transit shrinkage or damaged inwards.</span>
+              <span>Shortage / Damage: Issues a debit note to the supplier for damaged or missing goods.</span>
             )}
           </div>
 
@@ -388,7 +388,7 @@ export default function CreditDebitNotesPage() {
                   <th className="w-20 px-2 py-1 text-left">CODE</th>
                   <th className="px-2 py-1 text-left">PRODUCT NAME</th>
                   <th className="w-24 px-2 py-1 text-center">BATCH</th>
-                  <th className="w-20 px-2 py-1 text-center">EXPY</th>
+                  <th className="w-20 px-2 py-1 text-center">EXPIRY</th>
                   <th className="w-16 px-2 py-1 text-right">QTY</th>
                   {noteType === 'RATE_DIFFERENCE' ? (
                     <>
@@ -399,7 +399,7 @@ export default function CreditDebitNotesPage() {
                   ) : (
                     <th className="w-20 px-2 py-1 text-right">RATE</th>
                   )}
-                  <th className="w-24 px-2 py-1 text-right">VALUE</th>
+                  <th className="w-24 px-2 py-1 text-right">AMOUNT</th>
                   <th className="w-8 px-1 py-1 text-center">DEL</th>
                 </tr>
               </thead>
@@ -408,13 +408,13 @@ export default function CreditDebitNotesPage() {
                   <tr>
                     <td colSpan={10} className="text-center py-10 text-gray-500 font-bold">
                       <div className="flex flex-col items-center gap-2">
-                        <span>--- NO ITEMS ENTERED ---</span>
+                        <span>No items added to note</span>
                         <button
                           type="button"
                           onClick={() => setShowProductSearch(true)}
                           className="bg-brand-ink text-white px-3 py-1 font-bold hover:bg-brand-amber cursor-pointer"
                         >
-                          [F2: Search & Add Product]
+                          [F2: Search & Add Item]
                         </button>
                       </div>
                     </td>
@@ -524,6 +524,7 @@ export default function CreditDebitNotesPage() {
                             type="button"
                             onClick={() => setLines((prev) => prev.filter((_, i) => i !== idx))}
                             className="text-red-600 font-bold hover:bg-red-100 px-1"
+                            title="Remove item"
                           >
                             X
                           </button>
@@ -543,7 +544,7 @@ export default function CreditDebitNotesPage() {
               onClick={() => setShowProductSearch(true)}
               className="bg-brand-paper border border-brand-border px-2 py-1 font-bold hover:bg-gray-100"
             >
-              [+ Add Product (F2)]
+              [+ Add Item (F2)]
             </button>
 
             <div className="flex items-center gap-6">
@@ -559,7 +560,7 @@ export default function CreditDebitNotesPage() {
                 disabled={isSubmitting || lines.length === 0}
                 className="bg-brand-ink text-white font-bold px-6 py-2 border-2 border-black hover:bg-brand-amber disabled:opacity-50"
               >
-                {isSubmitting ? 'PROCESSING...' : `[F5: COMMIT ${activeTab} NOTE]`}
+                {isSubmitting ? 'SAVING...' : `[F5: SAVE ${activeTab} NOTE]`}
               </button>
             </div>
           </div>
@@ -589,7 +590,7 @@ export default function CreditDebitNotesPage() {
         <DosModal
           isOpen={true}
           onClose={() => setNoteSuccess(null)}
-          title={`${activeTab} NOTE GENERATED`}
+          title={`${activeTab} NOTE SAVED`}
           width="max-w-md"
           confirmText="[Enter: OK]"
           cancelText=""
@@ -597,10 +598,10 @@ export default function CreditDebitNotesPage() {
         >
           <div className="flex flex-col gap-2 font-mono text-xs text-center py-2">
             <div className="bg-green-100 text-green-900 p-2 font-bold border border-green-400">
-              VOUCHER COMMITTED TO LEDGER
+              Note Saved Successfully
             </div>
             <div className="text-base font-bold text-brand-ink">
-              VOUCHER NO: {noteSuccess.noteNo}
+              NOTE NO: {noteSuccess.noteNo}
             </div>
             <div className="text-lg font-bold text-brand-amber">
               AMOUNT: ₹ {noteSuccess.totalAmount.toFixed(2)}

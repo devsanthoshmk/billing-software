@@ -119,23 +119,22 @@ function withDbRetry<T>(fn: () => T, maxRetries = 15, baseDelayMs = 40): T {
 }
 
 /**
- * Creates a Sales POS Invoice atomically inside a Drizzle/SQLite transaction.
- * Replicates AINVPRE.PRG & INVPRE.PRG.
+ * Creates a Sales Invoice atomically inside a database transaction.
  */
 export async function createSalesInvoice(
   input: CreateInvoiceInput
 ): Promise<InvoiceCreationResult> {
   try {
     if (!input.items || input.items.length === 0) {
-      throw new Error('Invoice must contain at least 1 line item');
+      throw new Error('Please add at least one item before saving.');
     }
 
     if (!input.customerId) {
-      throw new Error('Customer is required');
+      throw new Error('Please select a customer.');
     }
 
     if (!input.invoiceDate) {
-      throw new Error('Invoice Date is required');
+      throw new Error('Invoice date is required.');
     }
 
     // 1. Fetch Customer
@@ -143,14 +142,14 @@ export async function createSalesInvoice(
       where: eq(customers.id, input.customerId),
     }).sync();
 
-    if (!customer) throw new Error('Customer not found');
-    if (customer.isBlocked) throw new Error('Customer account is blocked for billing');
+    if (!customer) throw new Error('Customer record not found.');
+    if (customer.isBlocked) throw new Error('Customer account is blocked for billing.');
 
     // 2. Fetch Tax Slabs for GST validation
     const allTaxSlabs = db.select().from(taxSlabs).all();
     const taxMap = new Map(allTaxSlabs.map((t) => [t.code, t]));
 
-    // 3. Process Line Items and validate pricing invariants
+    // 3. Process Line Items and validate pricing bounds
     let totalBilledUnits = 0;
     let totalFreeUnits = 0;
 
@@ -158,7 +157,7 @@ export async function createSalesInvoice(
       const lineNum = idx + 1;
 
       if (item.quantity <= 0) {
-        throw new Error(`Line ${lineNum}: Quantity must be greater than zero`);
+        throw new Error(`Line ${lineNum}: Quantity must be at least 1.`);
       }
 
       // Check batch pricing bounds
@@ -315,7 +314,7 @@ export async function createSalesInvoice(
     // Guard: Prohibit backdated transactions after Day-End closing
     const dateClosed = await checkDateIsClosed(input.invoiceDate);
     if (dateClosed.isClosed) {
-      throw new Error(`Business date ${input.invoiceDate} has already been closed on ${dateClosed.closedAt}. Backdated entries are prohibited.`);
+      throw new Error(`Billing date ${input.invoiceDate} was already closed on ${dateClosed.closedAt}. Entries on closed dates are not permitted.`);
     }
 
     // 7. Execute Atomic Drizzle ORM Transaction
@@ -344,7 +343,7 @@ export async function createSalesInvoice(
 
         if (batch.stockQty < line.totalUnitsToDeduct) {
           throw new Error(
-            `Insufficient stock in batch ${batch.batchNo} for ${line.productName}! Required: ${line.totalUnitsToDeduct}, Available: ${batch.stockQty}`
+            `Insufficient stock in batch ${batch.batchNo} for ${line.productName}. Required: ${line.totalUnitsToDeduct}, Available: ${batch.stockQty}`
           );
         }
 
@@ -504,7 +503,7 @@ export async function createSalesInvoice(
   } catch (error: any) {
     return {
       success: false,
-      error: error.message || 'Failed to create sales invoice',
+      error: error.message || 'Failed to save sales invoice.',
     };
   }
 }
@@ -587,7 +586,6 @@ export async function searchCustomers(query: string) {
 }
 
 /**
- * Feature F21: Inline Customer Creation
  * Rapid customer registration triggered by '+' key in Customer input.
  */
 export interface InlineCustomerInput {
@@ -675,7 +673,7 @@ export async function createInlineCustomer(input: InlineCustomerInput) {
   } catch (error: any) {
     return {
       success: false,
-      error: error.message || 'Failed to create party inline',
+      error: error.message || 'Failed to create customer.',
     };
   }
 }

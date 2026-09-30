@@ -42,8 +42,8 @@ export interface LineItemState {
 }
 
 export default function BillingPOS() {
-  const [operator, setOperator] = useState<string>('');
-  const [showLoginModal, setShowLoginModal] = useState<boolean>(true);
+  const [operator, setOperator] = useState<string>('ADMIN');
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [systemDate, setSystemDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -102,8 +102,17 @@ export default function BillingPOS() {
   const [lineItems, setLineItems] = useState<LineItemState[]>([]);
   const [activeRowIdx, setActiveRowIdx] = useState<number>(0);
 
-  // Load initial master data
+  // Load initial master data & restore saved operator
   useEffect(() => {
+    try {
+      const savedOp = localStorage.getItem('siva_pos_operator');
+      if (savedOp && savedOp.trim()) {
+        setOperator(savedOp.trim().toUpperCase());
+      }
+    } catch {
+      // ignore storage access exception
+    }
+
     async function loadData() {
       try {
         const data = await getBillingInitialData();
@@ -138,12 +147,12 @@ export default function BillingPOS() {
       const days = calculateDateDiffInDays(cust.dlExpiryDate, systemDate);
       if (days < 0) {
         setDlWarning({
-          message: `This party Drug License expired on ${cust.dlExpiryDate} (${Math.abs(days)} days ago)! Billing blocked under regulatory law.`,
+          message: `Customer's Drug License expired on ${cust.dlExpiryDate} (${Math.abs(days)} days ago). Invoicing is blocked.`,
           isBlocking: true,
         });
       } else if (days <= 30) {
         setDlWarning({
-          message: `Drug License expires on ${cust.dlExpiryDate} (in ${days} days)!`,
+          message: `Drug License expires on ${cust.dlExpiryDate} (in ${days} days).`,
           isBlocking: false,
         });
       } else {
@@ -176,7 +185,7 @@ export default function BillingPOS() {
       }
 
       if (!batch) {
-        setErrorMessage(`Product ${prod.name} has no batches available.`);
+        setErrorMessage(`No stock batches available for ${prod.name}.`);
         return;
       }
 
@@ -359,13 +368,13 @@ export default function BillingPOS() {
     if (!item) return;
 
     if (newRate > item.mrp) {
-      setErrorMessage(`DPCO Violation: Selling Rate cannot exceed MRP (Rs. ${item.mrp.toFixed(2)})!`);
+      setErrorMessage(`Selling rate cannot exceed MRP (₹ ${item.mrp.toFixed(2)}).`);
       return;
     }
 
     if (newRate < item.purchaseRate && newRate > 0) {
       setNegativeMarginAlert({
-        message: `Selling Rate (Rs. ${newRate.toFixed(2)}) is less than Purchase Rate (Rs. ${item.purchaseRate.toFixed(2)})!`,
+        message: `Selling rate (₹ ${newRate.toFixed(2)}) is lower than purchase rate (₹ ${item.purchaseRate.toFixed(2)}).`,
         rowIdx,
       });
     }
@@ -430,15 +439,15 @@ export default function BillingPOS() {
     setErrorMessage(null);
 
     if (lineItems.length === 0) {
-      setErrorMessage('Cannot save empty invoice. Add at least 1 item.');
+      setErrorMessage('Please add at least one item before saving.');
       return;
     }
     if (!selectedCustomerId) {
-      setErrorMessage('Customer is mandatory.');
+      setErrorMessage('Please select a customer.');
       return;
     }
     if (dlWarning?.isBlocking) {
-      setErrorMessage('Cannot invoice: Party Drug License has expired!');
+      setErrorMessage('Cannot save invoice: Customer Drug License has expired.');
       return;
     }
 
@@ -447,7 +456,7 @@ export default function BillingPOS() {
       const exposure = (selectedCustomer.closingBalance || 0) + grandTotal;
       if (selectedCustomer.creditLimit > 0 && exposure > selectedCustomer.creditLimit && !creditBypassed) {
         setCreditWarning({
-          message: `Credit limit exceeded! Limit: Rs. ${selectedCustomer.creditLimit.toFixed(2)}, Current Balance: Rs. ${(selectedCustomer.closingBalance || 0).toFixed(2)}, Invoice: Rs. ${grandTotal.toFixed(2)}. Total Exposure: Rs. ${exposure.toFixed(2)}. Bypass and proceed?`,
+          message: `Credit limit exceeded. Limit: ₹ ${selectedCustomer.creditLimit.toFixed(2)} | Current Balance: ₹ ${(selectedCustomer.closingBalance || 0).toFixed(2)} | This Invoice: ₹ ${grandTotal.toFixed(2)} | Total Dues: ₹ ${exposure.toFixed(2)}.`,
           canBypass: true,
         });
         return;
@@ -590,7 +599,7 @@ export default function BillingPOS() {
     },
     {
       keyLabel: '+',
-      label: 'New Party',
+      label: 'New Customer',
       variant: 'amber',
       onClick: () => setShowInlinePartyModal(true),
     },
@@ -608,9 +617,17 @@ export default function BillingPOS() {
       {showLoginModal && (
         <OperatorLoginModal
           isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          currentOperator={operator}
           systemDate={systemDate}
           onLogin={(op) => {
-            setOperator(op);
+            const finalOp = op.trim().toUpperCase() || 'ADMIN';
+            setOperator(finalOp);
+            try {
+              localStorage.setItem('siva_pos_operator', finalOp);
+            } catch {
+              // ignore storage exception
+            }
             setShowLoginModal(false);
           }}
         />
@@ -618,10 +635,20 @@ export default function BillingPOS() {
 
       {/* 2. Main Window */}
       <DosWindow
-        title="SALES POS INVOICE ENTRY SCREEN (AINVPRE.PRG)"
-        subtitle={`OPERATOR: ${operator || 'GUEST'} | TERM: ${paymentTerms}`}
-        breadcrumbs={['BILLING', 'SALES POS', 'NEW INVOICE']}
+        title="SALES INVOICE ENTRY"
+        subtitle={`OPERATOR: ${operator} | TERMS: ${paymentTerms}`}
+        breadcrumbs={['BILLING', 'SALES INVOICE', 'NEW BILL']}
         actions={actions}
+        headerExtra={
+          <button
+            type="button"
+            onClick={() => setShowLoginModal(true)}
+            title="Switch billing operator"
+            className="text-[10px] bg-white/10 hover:bg-white/20 text-gray-200 px-1.5 py-0.5 border border-gray-600 font-mono font-bold cursor-pointer"
+          >
+            OP: {operator} [SWITCH]
+          </button>
+        }
         statusInfo={
           <span className="text-brand-amber font-bold">
             ITEMS: {lineItems.length} | TOTAL: ₹ {grandTotal.toFixed(2)}
@@ -632,7 +659,7 @@ export default function BillingPOS() {
           {/* Error Banner */}
           {errorMessage && (
             <div className="bg-red-600 text-white font-bold px-3 py-1.5 border border-black flex justify-between items-center shadow-[2px_2px_0px_0px_#000]">
-              <span>[VALIDATION ERROR] {errorMessage}</span>
+              <span>[ERROR] {errorMessage}</span>
               <button
                 type="button"
                 onClick={() => setErrorMessage(null)}
@@ -686,15 +713,15 @@ export default function BillingPOS() {
             </div>
 
             <div className="col-span-2 flex items-center gap-1">
-              <label className="font-bold text-brand-ink">Term:</label>
+              <label className="font-bold text-brand-ink">Terms:</label>
               <select
                 value={paymentTerms}
                 onChange={(e) => setPaymentTerms(e.target.value as any)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5 font-bold"
               >
-                <option value="CREDIT">R (Credit)</option>
-                <option value="CASH">C (Cash)</option>
-                <option value="CHEQUE">H (Cheque)</option>
+                <option value="CREDIT">Credit</option>
+                <option value="CASH">Cash</option>
+                <option value="CHEQUE">Cheque</option>
               </select>
             </div>
 
@@ -718,7 +745,7 @@ export default function BillingPOS() {
                 onChange={(e) => setSalesmanId(e.target.value)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5"
               >
-                <option value="">-- Assigned Salesman --</option>
+                <option value="">-- Select Salesman --</option>
                 {salesmenList.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.code} - {s.name}
@@ -734,7 +761,7 @@ export default function BillingPOS() {
                 onChange={(e) => setDoctorId(e.target.value)}
                 className="w-full bg-white border border-brand-border px-1 py-0.5"
               >
-                <option value="">-- Referring Doctor --</option>
+                <option value="">-- Select Doctor --</option>
                 {doctorsList.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
@@ -788,7 +815,7 @@ export default function BillingPOS() {
             </div>
           )}
 
-          {/* 3. Line Items Grid (INVPRE.PRG 8 Columns) */}
+          {/* 3. Line Items Grid */}
           <div className="flex-1 border border-brand-border overflow-auto bg-white min-h-48">
             <table className="w-full border-collapse">
               <thead className="sticky top-0 bg-brand-ink text-white z-10">
@@ -800,9 +827,9 @@ export default function BillingPOS() {
                   <th className="w-16 px-2 py-1 text-right">QTY</th>
                   <th className="w-14 px-2 py-1 text-right">FREE</th>
                   <th className="w-24 px-2 py-1 text-center">BATCH</th>
-                  <th className="w-20 px-2 py-1 text-center">EXPY</th>
+                  <th className="w-20 px-2 py-1 text-center">EXPIRY</th>
                   <th className="w-20 px-2 py-1 text-right">RATE</th>
-                  <th className="w-24 px-2 py-1 text-right">VALUE</th>
+                  <th className="w-24 px-2 py-1 text-right">AMOUNT</th>
                   <th className="w-8 px-1 py-1 text-center">DEL</th>
                 </tr>
               </thead>
@@ -811,13 +838,13 @@ export default function BillingPOS() {
                   <tr>
                     <td colSpan={11} className="text-center py-12 text-gray-500 font-bold">
                       <div className="flex flex-col items-center gap-2">
-                        <span>--- NO LINE ITEMS ENTERED ---</span>
+                        <span>No items added to invoice</span>
                         <button
                           type="button"
                           onClick={() => setShowProductSearchModal(true)}
                           className="bg-brand-ink text-white px-3 py-1 font-bold border border-black hover:bg-brand-amber cursor-pointer"
                         >
-                          [F2: Press to Search & Add Products]
+                          [F2: Search & Add Product]
                         </button>
                       </div>
                     </td>
@@ -857,7 +884,7 @@ export default function BillingPOS() {
                           <button
                             type="button"
                             onClick={() => handleOpenBatchPicker(idx)}
-                            title="Click or F3 to change batch"
+                            title="Click or press F3 to change batch"
                             className="w-full bg-brand-surface hover:bg-brand-amber hover:text-white px-1 py-0.5 border border-brand-border font-bold text-xs truncate"
                           >
                             {item.batchNo}
@@ -883,7 +910,7 @@ export default function BillingPOS() {
                             type="button"
                             onClick={() => handleDeleteRow(idx)}
                             className="text-red-600 font-bold hover:bg-red-100 px-1"
-                            title="Delete item"
+                            title="Remove item"
                           >
                             X
                           </button>
@@ -907,10 +934,10 @@ export default function BillingPOS() {
                 }}
                 className="bg-brand-surface border border-brand-border px-2 py-1 font-bold text-brand-ink hover:bg-gray-200"
               >
-                [+ Add Another Product (F2)]
+                [+ Add Item (F2)]
               </button>
               <span className="text-gray-500 text-[11px]">
-                Tip: Press [F3] on row to select another batch | Press [+] in Customer to register party
+                Tip: Press [F3] to select batch | Press [+] in Customer to add new customer
               </span>
             </div>
           )}
@@ -919,9 +946,9 @@ export default function BillingPOS() {
           <div className="bg-brand-surface border border-brand-border p-2 grid grid-cols-12 gap-3 items-end">
             <div className="col-span-6 flex flex-col gap-1 text-[11px] text-gray-600">
               <div className="flex gap-4">
-                <span>Gross Turnover: ₹ {subtotalGross.toFixed(2)}</span>
-                <span>Line Disc: ₹ {totalLineDisc.toFixed(2)}</span>
-                <span>Net Taxable: ₹ {netTaxable.toFixed(2)}</span>
+                <span>Subtotal: ₹ {subtotalGross.toFixed(2)}</span>
+                <span>Discount: ₹ {totalLineDisc.toFixed(2)}</span>
+                <span>Taxable: ₹ {netTaxable.toFixed(2)}</span>
               </div>
               <div className="flex gap-4">
                 <span>CGST: ₹ {totalCgst.toFixed(2)}</span>
@@ -995,10 +1022,10 @@ export default function BillingPOS() {
         <DosModal
           isOpen={true}
           onClose={() => setSplitPrompt(null)}
-          title="INSUFFICIENT BATCH STOCK — AUTO SPLIT?"
+          title="INSUFFICIENT BATCH STOCK"
           width="max-w-md"
           variant="amber"
-          confirmText="[Enter: Split Batches]"
+          confirmText="[Enter: Split Across Batches]"
           cancelText="[ESC: Cancel]"
           onConfirm={splitPrompt.onAccept}
         >
@@ -1007,7 +1034,7 @@ export default function BillingPOS() {
               Batch <span className="underline">{splitPrompt.batchNo}</span> of {splitPrompt.productName} has only {splitPrompt.available} units available.
             </p>
             <p>
-              Requested total is {splitPrompt.needed} units. Would you like to fulfill {splitPrompt.available} units from this batch and automatically split the remaining {splitPrompt.needed - splitPrompt.available} units to the next FEFO batch?
+              Requested quantity is {splitPrompt.needed} units. Fulfill {splitPrompt.available} units from this batch and take the remaining {splitPrompt.needed - splitPrompt.available} units from the next available batch?
             </p>
           </div>
         </DosModal>
@@ -1018,10 +1045,10 @@ export default function BillingPOS() {
         <DosModal
           isOpen={true}
           onClose={() => setCreditWarning(null)}
-          title="CUSTOMER CREDIT LIMIT EXCEEDED"
+          title="CREDIT LIMIT EXCEEDED"
           width="max-w-md"
           variant="danger"
-          confirmText="[Enter: Bypass & Proceed]"
+          confirmText="[Enter: Approve & Continue]"
           cancelText="[ESC: Cancel]"
           onConfirm={() => {
             setCreditBypassed(true);
@@ -1032,7 +1059,7 @@ export default function BillingPOS() {
           <div className="flex flex-col gap-2 font-mono text-xs">
             <p className="text-red-700 font-bold">{creditWarning.message}</p>
             <p className="text-gray-600">
-              Under credit management rules, supervisor override is required to bypass party credit limit.
+              Supervisor approval is required to proceed beyond the customer's credit limit.
             </p>
           </div>
         </DosModal>
@@ -1043,17 +1070,17 @@ export default function BillingPOS() {
         <DosModal
           isOpen={true}
           onClose={() => setNegativeMarginAlert(null)}
-          title="NEGATIVE MARGIN ALERT"
+          title="LOW MARGIN WARNING"
           width="max-w-md"
           variant="amber"
           confirmText="[Enter: Accept Rate]"
-          cancelText="[ESC: Revert]"
+          cancelText="[ESC: Change Rate]"
           onConfirm={() => setNegativeMarginAlert(null)}
         >
           <div className="flex flex-col gap-2 font-mono text-xs">
             <p className="font-bold text-amber-900">{negativeMarginAlert.message}</p>
             <p className="text-gray-600">
-              Selling price is below purchase cost. Confirm this promotional concession or adjust the rate.
+              Selling rate is lower than purchase cost. Confirm this promotional rate or adjust it before saving.
             </p>
           </div>
         </DosModal>
@@ -1064,9 +1091,9 @@ export default function BillingPOS() {
         <DosModal
           isOpen={true}
           onClose={() => setInvoiceResult(null)}
-          title="INVOICE GENERATED SUCCESSFULLY"
+          title="INVOICE SAVED"
           width="max-w-md"
-          confirmText="[Enter: Prepare Next Bill]"
+          confirmText="[Enter: New Bill]"
           cancelText="[ESC: Close]"
           actions={[
             {
@@ -1079,7 +1106,7 @@ export default function BillingPOS() {
         >
           <div className="flex flex-col gap-3 font-mono text-xs text-center py-2">
             <div className="bg-green-100 text-green-900 p-2 border border-green-400 font-bold">
-              INVOICE SAVED & STOCKS COMMITTED
+              Invoice Saved Successfully
             </div>
             <div className="text-lg font-bold text-brand-ink">
               INVOICE NO: {invoiceResult.invoiceNo}
@@ -1088,7 +1115,7 @@ export default function BillingPOS() {
               NET AMOUNT: ₹ {invoiceResult.grandTotal.toFixed(2)}
             </div>
             <div className="text-gray-500 text-[11px]">
-              Inventory decremented across batches & customer ledger balance updated.
+              Stock deducted and customer balance updated.
             </div>
             <button
               type="button"
@@ -1096,7 +1123,7 @@ export default function BillingPOS() {
               className="mt-2 py-1.5 px-3 bg-brand-ink text-white font-bold hover:bg-brand-ink/90 flex items-center justify-center gap-2 cursor-pointer shadow-[2px_2px_0px_0px_#F05A28]"
             >
               <span className="bg-brand-amber text-black px-1">F8</span>
-              <span>OPEN PRINT PREVIEW / ESC/POS FORMATTER</span>
+              <span>PRINT INVOICE (F8)</span>
             </button>
           </div>
         </DosModal>
@@ -1116,10 +1143,10 @@ export default function BillingPOS() {
         <DosModal
           isOpen={true}
           onClose={() => setShowClearConfirmModal(false)}
-          title="CONFIRM: CLEAR INVOICE DRAFT"
+          title="CLEAR INVOICE"
           width="max-w-md"
           variant="danger"
-          confirmText="[Enter: Discard Draft]"
+          confirmText="[Enter: Clear All]"
           cancelText="[ESC: Cancel]"
           onConfirm={() => {
             setLineItems([]);
@@ -1128,9 +1155,9 @@ export default function BillingPOS() {
           }}
         >
           <div className="flex flex-col gap-2 font-mono text-xs">
-            <p className="font-bold text-red-700">DISCARD CURRENT INVOICE DRAFT?</p>
+            <p className="font-bold text-red-700">Clear all items from this invoice?</p>
             <p className="text-gray-600">
-              All entered line items, scanned batches, and discounts will be cleared. This action cannot be undone.
+              All entered items and discounts will be cleared. This action cannot be undone.
             </p>
           </div>
         </DosModal>

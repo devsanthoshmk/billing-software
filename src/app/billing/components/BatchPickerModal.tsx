@@ -75,7 +75,7 @@ export function BatchPickerModal({
         onKeyDown={handleKeyDown}
       >
         <div className="bg-brand-surface p-1.5 border border-brand-border text-brand-ink">
-          Use [↑↓] arrow keys to navigate batches. Batches ordered by FEFO (Earliest Expiry First).
+          Use arrow keys (↑ / ↓) or click to select batch. Sorted by earliest expiry date.
         </div>
 
         <div className="border border-brand-border overflow-auto max-h-60 bg-white">
@@ -95,7 +95,7 @@ export function BatchPickerModal({
               {batches.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-4 text-gray-500 font-bold">
-                    --- NO ACTIVE BATCHES AVAILABLE ---
+                    No batches available for this product
                   </td>
                 </tr>
               ) : (

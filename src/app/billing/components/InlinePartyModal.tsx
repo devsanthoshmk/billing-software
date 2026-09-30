@@ -40,11 +40,11 @@ export function InlinePartyModal({
     setError(null);
 
     if (!name.trim()) {
-      setError('Customer Name is required!');
+      setError('Customer name is required.');
       return;
     }
     if (!areaId) {
-      setError('Area selection is required!');
+      setError('Please select an area.');
       return;
     }
 
@@ -70,10 +70,10 @@ export function InlinePartyModal({
         onPartyCreated(res.customer);
         onClose();
       } else {
-        setError(res.error || 'Failed to create customer');
+        setError(res.error || 'Failed to create customer.');
       }
     } catch (err: any) {
-      setError(err.message || 'Error creating customer');
+      setError(err.message || 'Error creating customer.');
     } finally {
       setIsSubmitting(false);
     }
@@ -83,7 +83,7 @@ export function InlinePartyModal({
     <DosModal
       isOpen={isOpen}
       onClose={onClose}
-      title="NEW PARTY ADDITION"
+      title="NEW CUSTOMER ENTRY"
       width="max-w-2xl"
       confirmText="[F5: Save & Select]"
       cancelText="[ESC: Cancel]"
@@ -97,7 +97,7 @@ export function InlinePartyModal({
         )}
 
         <div className="grid grid-cols-12 gap-2 items-center">
-          <label className="col-span-4 font-bold text-brand-ink">Area Code/Name :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Area :</label>
           <div className="col-span-8">
             <select
               value={areaId}
@@ -119,7 +119,7 @@ export function InlinePartyModal({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value.toUpperCase())}
-              placeholder="PHARMACY / HOSPITAL NAME"
+              placeholder="Enter pharmacy or hospital name"
               className="w-full bg-[#00AAAA] text-black font-bold px-1.5 py-0.5 border border-black focus:outline-none"
               autoFocus
               required
@@ -132,7 +132,7 @@ export function InlinePartyModal({
               type="text"
               value={addressLine1}
               onChange={(e) => setAddressLine1(e.target.value)}
-              placeholder="Shop / Door No, Street"
+              placeholder="Shop / Door No., Street"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
@@ -159,7 +159,7 @@ export function InlinePartyModal({
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">Customer Place :</label>
+          <label className="col-span-4 font-bold text-brand-ink">City / Town :</label>
           <div className="col-span-8">
             <input
               type="text"
@@ -176,46 +176,46 @@ export function InlinePartyModal({
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Contact digits"
+              placeholder="Phone number"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">GST Number :</label>
+          <label className="col-span-4 font-bold text-brand-ink">GSTIN :</label>
           <div className="col-span-8">
             <input
               type="text"
               value={gstin}
               onChange={(e) => setGstin(e.target.value.toUpperCase())}
-              placeholder="15-char GSTIN (e.g. 33AAAAA0000A1Z5)"
+              placeholder="15-digit GSTIN (e.g. 33AAAAA0000A1Z5)"
               maxLength={15}
               className="w-full bg-white border border-brand-border px-1.5 py-0.5 uppercase"
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">DL NO 20 :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Drug License (20B) :</label>
           <div className="col-span-8">
             <input
               type="text"
               value={dlNo20}
               onChange={(e) => setDlNo20(e.target.value)}
-              placeholder="Form 20B Drug License"
+              placeholder="e.g. TN/CHE/20B/12345"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">DL NO 21 :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Drug License (21B) :</label>
           <div className="col-span-8">
             <input
               type="text"
               value={dlNo21}
               onChange={(e) => setDlNo21(e.target.value)}
-              placeholder="Form 21B Drug License"
+              placeholder="e.g. TN/CHE/21B/12346"
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             />
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">Local/Outstation :</label>
+          <label className="col-span-4 font-bold text-brand-ink">GST Type :</label>
           <div className="col-span-8 flex gap-4">
             <label className="flex items-center gap-1 cursor-pointer">
               <input
@@ -225,7 +225,7 @@ export function InlinePartyModal({
                 checked={billingType === 'L'}
                 onChange={() => setBillingType('L')}
               />
-              <span>Local (50% CGST + 50% SGST)</span>
+              <span>Local (CGST + SGST)</span>
             </label>
             <label className="flex items-center gap-1 cursor-pointer">
               <input
@@ -235,11 +235,11 @@ export function InlinePartyModal({
                 checked={billingType === 'O'}
                 onChange={() => setBillingType('O')}
               />
-              <span>Outstation (100% IGST)</span>
+              <span>Outstation (IGST)</span>
             </label>
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">Term :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Payment Terms :</label>
           <div className="col-span-8 flex gap-4">
             <label className="flex items-center gap-1 cursor-pointer">
               <input
@@ -249,7 +249,7 @@ export function InlinePartyModal({
                 checked={paymentTerms === 'R'}
                 onChange={() => setPaymentTerms('R')}
               />
-              <span>Credit [R]</span>
+              <span>Credit</span>
             </label>
             <label className="flex items-center gap-1 cursor-pointer">
               <input
@@ -259,7 +259,7 @@ export function InlinePartyModal({
                 checked={paymentTerms === 'C'}
                 onChange={() => setPaymentTerms('C')}
               />
-              <span>Cash [C]</span>
+              <span>Cash</span>
             </label>
             <label className="flex items-center gap-1 cursor-pointer">
               <input
@@ -269,18 +269,18 @@ export function InlinePartyModal({
                 checked={paymentTerms === 'H'}
                 onChange={() => setPaymentTerms('H')}
               />
-              <span>Cheque/Hold [H]</span>
+              <span>Cheque</span>
             </label>
           </div>
 
-          <label className="col-span-4 font-bold text-brand-ink">Salesman Code :</label>
+          <label className="col-span-4 font-bold text-brand-ink">Salesman :</label>
           <div className="col-span-8">
             <select
               value={salesmanId}
               onChange={(e) => setSalesmanId(e.target.value)}
               className="w-full bg-white border border-brand-border px-1.5 py-0.5"
             >
-              <option value="">-- No Assigned Salesman --</option>
+              <option value="">-- Select Salesman --</option>
               {salesmen.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.code} - {s.name}
