@@ -206,17 +206,17 @@ export async function createProductWithBatches(input: ProductInput) {
     throw new Error(`Product Code ${input.code.trim()} already exists in database`);
   }
 
-  // Validate pricing invariants across all batches
+  // Validate batch pricing
   const batches = input.batches || [];
   for (const b of batches) {
     if (b.mrp < b.sellingRate) {
       throw new Error(
-        `Pricing invariant violated for batch ${b.batchNo}: MRP (${b.mrp}) cannot be less than Selling Rate (${b.sellingRate})`
+        `Invalid pricing (Pricing invariant violated) for batch ${b.batchNo}: MRP (${b.mrp}) cannot be less than Selling Rate (${b.sellingRate})`
       );
     }
     if (b.sellingRate < b.purchaseRate) {
       throw new Error(
-        `Pricing invariant violated for batch ${b.batchNo}: Selling Rate (${b.sellingRate}) cannot be less than Purchase Rate (${b.purchaseRate})`
+        `Invalid pricing (Pricing invariant violated) for batch ${b.batchNo}: Selling Rate (${b.sellingRate}) cannot be less than Purchase Rate (${b.purchaseRate})`
       );
     }
   }
@@ -292,17 +292,17 @@ export async function createProductWithBatches(input: ProductInput) {
 export async function updateProductWithBatches(input: ProductInput) {
   if (!input.id) throw new Error('Product ID is required for update');
 
-  // Validate pricing invariants across all batches
+  // Validate batch pricing
   const batches = input.batches || [];
   for (const b of batches) {
     if (b.mrp < b.sellingRate) {
       throw new Error(
-        `Pricing invariant violated for batch ${b.batchNo}: MRP (${b.mrp}) cannot be less than Selling Rate (${b.sellingRate})`
+        `Invalid pricing (Pricing invariant violated) for batch ${b.batchNo}: MRP (${b.mrp}) cannot be less than Selling Rate (${b.sellingRate})`
       );
     }
     if (b.sellingRate < b.purchaseRate) {
       throw new Error(
-        `Pricing invariant violated for batch ${b.batchNo}: Selling Rate (${b.sellingRate}) cannot be less than Purchase Rate (${b.purchaseRate})`
+        `Invalid pricing (Pricing invariant violated) for batch ${b.batchNo}: Selling Rate (${b.sellingRate}) cannot be less than Purchase Rate (${b.purchaseRate})`
       );
     }
   }

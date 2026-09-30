@@ -184,7 +184,7 @@ export function ProductSearchModal({
     },
     {
       id: 'sellingRate',
-      header: 'PTR / RATE',
+      header: 'SELLING (PTR)',
       accessorKey: 'sellingRate',
       width: 'w-16',
       align: 'right',
@@ -204,7 +204,7 @@ export function ProductSearchModal({
       <DosModal
         isOpen={isOpen}
         onClose={onClose}
-        title="[F19] PRODUCT HELP & SEARCH BROWSER"
+        title="PRODUCT &amp; MEDICINE SEARCH"
         width="max-w-5xl"
         cancelText="[ESC: Close]"
       >
@@ -219,7 +219,7 @@ export function ProductSearchModal({
                 data-testid="product-search-input"
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
-                placeholder="Type brand, molecule, batch, or barcode... (F5 toggle stock)"
+                placeholder="Search by brand, molecule/generic, batch no, or barcode... (F5 toggle stock)"
                 className="flex-1 border border-brand-border bg-white px-2 py-1 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-brand-amber uppercase"
               />
             </div>
@@ -251,7 +251,7 @@ export function ProductSearchModal({
               emptyText={
                 query.trim() === ''
                   ? '--- TYPE TO SEARCH MEDICINES ---'
-                  : '--- NO PRODUCTS FOUND MATCHING QUERY ---'
+                  : '--- NO MEDICINES FOUND MATCHING QUERY ---'
               }
               showLineNumbers={true}
               autoFocus={false}
@@ -266,7 +266,7 @@ export function ProductSearchModal({
                   [{selectedItem.code}] {selectedItem.name} — {selectedItem.packaging}
                 </span>
                 <span className="text-brand-amber">
-                  Total SOH: {selectedItem.totalStockOnHand} Units
+                  Total Stock: {selectedItem.totalStockOnHand} Units
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-2 text-gray-700 pt-0.5">
@@ -299,7 +299,7 @@ export function ProductSearchModal({
           {/* Footer Guide */}
           <div className="flex items-center justify-between text-[11px] text-gray-500 bg-brand-surface px-2 py-1 border-t border-brand-border">
             <span>[↑/↓: Navigate Rows] [ENTER: Select] [F5: Toggle In-Stock] [ESC: Dismiss]</span>
-            <span className="font-bold text-brand-ink">FEATURE F19 READY</span>
+            <span className="font-bold text-brand-ink">SEARCH READY</span>
           </div>
         </div>
       </DosModal>
@@ -316,15 +316,15 @@ export function ProductSearchModal({
       >
         <div className="flex flex-col gap-2 font-mono text-xs">
           <p className="font-bold text-red-600">
-            Product has no saleable stock! Continue as backorder?
+            This medicine is currently out of stock. Continue as backorder?
           </p>
           <div className="p-2 bg-brand-surface border border-brand-border text-gray-800">
-            <div>Product: {outOfStockWarning?.name}</div>
+            <div>Medicine: {outOfStockWarning?.name}</div>
             <div>Batch: {outOfStockWarning?.batchNo}</div>
             <div>Current Stock: {outOfStockWarning?.stock} units</div>
           </div>
           <p className="text-gray-600 text-[11px]">
-            Press Enter to select this item anyway for backorder billing, or Escape to choose another item.
+            Press Enter to select this item anyway for backorder billing, or Escape to choose another medicine.
           </p>
         </div>
       </DosModal>

@@ -260,7 +260,7 @@ export async function updateArea(input: AreaInput) {
 }
 
 export async function deleteArea(id: string) {
-  // Referential Guard: AAED.PRG line 91
+  // Referential Guard: Ensure area has no active customers
   const custCount = await db.select({ count: sql<number>`COUNT(*)` })
     .from(customers)
     .where(eq(customers.areaId, id))
@@ -330,7 +330,7 @@ export async function createTaxSlab(input: TaxSlabInput) {
 export async function updateTaxSlab(input: TaxSlabInput) {
   const code = input.code.trim();
 
-  // TAXAED.PRG line 66: Code '01' 0% Exempt is immutable
+  // Code '01' 0% Exempt is immutable system default
   if (code === '01') {
     throw new Error('Exempted Tax Code (01) is protected');
   }

@@ -276,7 +276,7 @@ export default function SupplierMasterPage() {
     mode === 'VIEW'
       ? [
           { keyLabel: 'F1', label: 'Add', onClick: handleAddNew, variant: 'primary' },
-          { keyLabel: 'F2', label: 'Edit (SPM)', onClick: requestEditMode, variant: 'amber' },
+          { keyLabel: 'F2', label: 'Edit', onClick: requestEditMode, variant: 'amber' },
           { keyLabel: 'F3', label: 'Delete', onClick: () => setIsDeleteModalOpen(true), variant: 'danger' },
           { keyLabel: 'F4', label: 'Payables', onClick: openPayablesSummary },
           { keyLabel: 'ESC', label: 'Exit Hub', onClick: () => router.push('/masters') },
@@ -289,13 +289,13 @@ export default function SupplierMasterPage() {
   return (
     <>
       <DosWindow
-        title="SUPPLIER / VENDOR MASTER MAINTENANCE"
-        subtitle={`[SYS-1] [MODE: ${mode}] [SECURITY: SUPERVISOR PROTECTED]`}
+        title="SUPPLIER &amp; DISTRIBUTOR REGISTRY"
+        subtitle={`[PHARMA DISTRIBUTORS & AP LEDGERS] [MODE: ${mode}]`}
         breadcrumbs={['MASTERS', 'SUPPLIERS', mode]}
         actions={actionButtons}
         statusInfo={
           <span className="text-gray-300">
-            Current Payable: Rs {Number(formData.currentBalance || 0).toFixed(2)}
+            Current Payable: ₹{Number(formData.currentBalance || 0).toFixed(2)}
           </span>
         }
       >
@@ -327,8 +327,8 @@ export default function SupplierMasterPage() {
               />
             </div>
             <div className="p-2 border-t border-brand-border bg-brand-surface text-[11px] font-mono flex justify-between text-gray-600">
-              <span>Vendors: {suppliersList.length}</span>
-              <span>[F2: Edit Gate] [F4: Ledger]</span>
+              <span>Distributors: {suppliersList.length}</span>
+              <span>[F2: Edit] [F4: Ledger]</span>
             </div>
           </div>
 
@@ -354,8 +354,8 @@ export default function SupplierMasterPage() {
               }`}
             >
               <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1 mb-3 flex justify-between">
-                <span>SUPPLIER FIRM & COMMERCIAL PROFILE</span>
-                <span className="text-gray-500">[ENTER: ADVANCE FIELD]</span>
+                <span>DISTRIBUTOR DETAILS &amp; BANKING PROFILE</span>
+                <span className="text-gray-500">[ENTER: NEXT FIELD]</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -575,7 +575,7 @@ export default function SupplierMasterPage() {
       <DosModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-        title="ENTER SUPERVISOR PASSWORD (SPM)"
+        title="SUPERVISOR AUTHORIZATION REQUIRED"
         variant="amber"
         confirmText="[Enter: Unlock Form]"
         cancelText="[ESC: Cancel]"
@@ -583,11 +583,11 @@ export default function SupplierMasterPage() {
       >
         <div className="flex flex-col gap-3 font-mono text-xs">
           <p className="text-gray-700 font-bold">
-            Administrative security gate: Modifying supplier master records requires supervisor authorization.
+            Supervisor authorization is required to modify supplier master records.
           </p>
           <div>
             <label className="block text-[11px] font-bold text-gray-700 mb-1">
-              SUPERVISOR PASSWORD (CASE SENSITIVE):
+              SUPERVISOR PASSWORD:
             </label>
             <input
               type="password"
@@ -616,7 +616,7 @@ export default function SupplierMasterPage() {
       <DosModal
         isOpen={isPayablesModalOpen}
         onClose={() => setIsPayablesModalOpen(false)}
-        title={`[F4] SUPPLIER PAYABLES & LEDGER OVERVIEW: ${payablesSummary?.supplierName || ''}`}
+        title={`DISTRIBUTOR PAYABLES & LEDGER: ${payablesSummary?.supplierName || ''}`}
         width="max-w-2xl"
         cancelText="[ESC: Dismiss]"
       >
@@ -628,18 +628,18 @@ export default function SupplierMasterPage() {
             </div>
             <div>
               <span className="text-gray-500 font-bold">Opening Balance: </span>
-              <span className="font-bold">Rs {Number(payablesSummary?.openingBalance || 0).toFixed(2)}</span>
+              <span className="font-bold">₹{Number(payablesSummary?.openingBalance || 0).toFixed(2)}</span>
             </div>
             <div>
               <span className="text-gray-500 font-bold">Total Purchases: </span>
               <span className="font-bold text-blue-700">
-                Rs {Number(payablesSummary?.totalPurchases || 0).toFixed(2)} ({payablesSummary?.purchaseCount} bills)
+                ₹{Number(payablesSummary?.totalPurchases || 0).toFixed(2)} ({payablesSummary?.purchaseCount} bills)
               </span>
             </div>
             <div>
               <span className="text-gray-500 font-bold">Total Payments: </span>
               <span className="font-bold text-green-700">
-                Rs {Number(payablesSummary?.totalPayments || 0).toFixed(2)} ({payablesSummary?.paymentCount} vouchers)
+                ₹{Number(payablesSummary?.totalPayments || 0).toFixed(2)} ({payablesSummary?.paymentCount} vouchers)
               </span>
             </div>
           </div>
@@ -647,7 +647,7 @@ export default function SupplierMasterPage() {
           <div className="p-3 bg-brand-ink text-white flex justify-between items-center text-sm font-bold">
             <span>OUTSTANDING PAYABLE BALANCE:</span>
             <span className="text-brand-amber">
-              Rs {Number(payablesSummary?.outstandingPayable || 0).toFixed(2)}
+              ₹{Number(payablesSummary?.outstandingPayable || 0).toFixed(2)}
             </span>
           </div>
         </div>
@@ -657,7 +657,7 @@ export default function SupplierMasterPage() {
       <DosModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="CONFIRM SUPPLIER DELETION <Y/N>?"
+        title="CONFIRM SUPPLIER DELETION"
         variant="danger"
         confirmText="[Enter: Delete Supplier]"
         cancelText="[ESC: Cancel]"
@@ -665,15 +665,15 @@ export default function SupplierMasterPage() {
       >
         <div className="flex flex-col gap-2 font-mono text-xs">
           <p className="font-bold text-red-600">
-            Are you sure you want to delete this supplier vendor account?
+            Are you sure you want to permanently delete this supplier account?
           </p>
           <div className="p-2 bg-brand-surface border border-brand-border text-gray-800">
             <div>Code: {formData.code}</div>
             <div>Name: {formData.name}</div>
-            <div>Payable Balance: Rs {Number(formData.currentBalance || 0).toFixed(2)}</div>
+            <div>Payable Balance: ₹{Number(formData.currentBalance || 0).toFixed(2)}</div>
           </div>
           <p className="text-gray-600 text-[11px]">
-            In accordance with SUPAED.PRG audit invariants, deletion will be rejected if open payables or active purchase bills exist.
+            Suppliers with purchase invoices or pending payable balances cannot be deleted.
           </p>
         </div>
       </DosModal>

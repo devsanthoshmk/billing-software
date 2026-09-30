@@ -44,7 +44,12 @@ describe('Feature F15 & F19: Product Master & Unified Search Browser', () => {
     it('creates product with batches and preserves leading zeros in code (T2-F15-01)', async () => {
       const code = '00123';
       // Clean up previous test runs if any
-      await db.delete(products).where(eq(products.code, code)).run();
+      const existing = await db.query.products.findFirst({ where: eq(products.code, code) });
+      if (existing) {
+        await db.delete(invoiceItems).where(eq(invoiceItems.productId, existing.id)).run();
+        await db.delete(productBatches).where(eq(productBatches.productId, existing.id)).run();
+        await db.delete(products).where(eq(products.id, existing.id)).run();
+      }
 
       const res = await createProductWithBatches({
         code,
@@ -290,12 +295,13 @@ describe('Feature F15 & F19: Product Master & Unified Search Browser', () => {
       // Simulate a historical invoice referencing this product
       const fakeInvoiceId = crypto.randomUUID();
       const fakeItemId = crypto.randomUUID();
+      const testInvoiceNo = `TEST-INV-${Date.now()}`;
       const customer = await db.query.customers.findFirst();
 
       if (customer && prod && prod.batches.length > 0) {
         db.insert(invoices).values({
           id: fakeInvoiceId,
-          invoiceNo: 'TEST-INV-999901',
+          invoiceNo: testInvoiceNo,
           invoiceSeries: 1,
           invoiceDate: '2026-09-28',
           invoiceTime: '12:00:00',

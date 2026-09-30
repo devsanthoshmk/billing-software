@@ -294,8 +294,8 @@ export default function CustomerMasterPage() {
   return (
     <>
       <DosWindow
-        title="CUSTOMER MASTER MAINTENANCE"
-        subtitle={`[SYS-1] [MODE: ${mode}]`}
+        title="CUSTOMER MASTER DIRECTORY"
+        subtitle={`[CHEMIST & HOSPITAL ACCOUNTS] [MODE: ${mode}]`}
         breadcrumbs={['MASTERS', 'CUSTOMERS', mode]}
         actions={actionButtons}
         statusInfo={
@@ -305,7 +305,7 @@ export default function CustomerMasterPage() {
             </span>
           ) : (
             <span className="text-gray-300">
-              Outstanding Balance: Rs {Number(formData.closingBalance || 0).toFixed(2)}
+              Outstanding Balance: ₹{Number(formData.closingBalance || 0).toFixed(2)}
             </span>
           )
         }
@@ -345,8 +345,8 @@ export default function CustomerMasterPage() {
               />
             </div>
             <div className="p-2 border-t border-brand-border bg-brand-surface text-[11px] font-mono flex justify-between text-gray-600">
-              <span>Parties: {customersList.length}</span>
-              <span>[F1: Add Party]</span>
+              <span>Total Chemist Accounts: {customersList.length}</span>
+              <span>[F1: Add Customer]</span>
             </div>
           </div>
 
@@ -372,8 +372,8 @@ export default function CustomerMasterPage() {
               }`}
             >
               <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1 mb-3 flex justify-between">
-                <span>PARTY DETAILS & REGULATORY COMPLIANCE</span>
-                <span className="text-gray-500">[ENTER: PROGRESSION]</span>
+                <span>CUSTOMER DETAILS &amp; DRUG LICENSES</span>
+                <span className="text-gray-500">[ENTER: NEXT FIELD]</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -391,7 +391,7 @@ export default function CustomerMasterPage() {
 
                 {/* Name */}
                 <div className="md:col-span-2">
-                  <label className="block text-[11px] font-bold text-gray-700 mb-0.5">PHARMACY / PARTY NAME *</label>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-0.5">PHARMACY / HOSPITAL NAME *</label>
                   <input
                     type="text"
                     disabled={mode === 'VIEW'}
@@ -520,7 +520,7 @@ export default function CustomerMasterPage() {
 
                 {/* Credit Days */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-700 mb-0.5">CREDIT DAYS (0=CASH)</label>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-0.5">CREDIT PERIOD (DAYS)</label>
                   <input
                     type="number"
                     disabled={mode === 'VIEW'}
@@ -532,7 +532,7 @@ export default function CustomerMasterPage() {
 
                 {/* Credit Limit */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-700 mb-0.5">CREDIT LIMIT (RS)</label>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-0.5">CREDIT LIMIT (₹)</label>
                   <input
                     type="number"
                     step="1000"
@@ -594,7 +594,7 @@ export default function CustomerMasterPage() {
                       onChange={(e) => setFormData({ ...formData, isTaxExempt: e.target.checked })}
                       className="w-4 h-4 accent-brand-amber"
                     />
-                    <span>TAX EXEMPT (NOTAX FLAG)</span>
+                    <span>TAX EXEMPT PARTY</span>
                   </label>
                 </div>
               </div>
@@ -607,24 +607,23 @@ export default function CustomerMasterPage() {
       <DosModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="CONFIRM CUSTOMER DELETION <Y/N>?"
+        title="CONFIRM CUSTOMER DELETION"
         variant="danger"
-        confirmText="[Enter: Delete Party]"
+        confirmText="[Enter: Delete Customer]"
         cancelText="[ESC: Cancel]"
         onConfirm={handleDelete}
       >
         <div className="flex flex-col gap-2 font-mono text-xs">
           <p className="font-bold text-red-600">
-            Are you sure you want to delete this customer account?
+            Are you sure you want to permanently delete this customer account?
           </p>
           <div className="p-2 bg-brand-surface border border-brand-border text-gray-800">
             <div>Code: {formData.code}</div>
             <div>Name: {formData.name}</div>
-            <div>Current Balance: Rs {Number(formData.closingBalance || 0).toFixed(2)}</div>
+            <div>Current Balance: ₹{Number(formData.closingBalance || 0).toFixed(2)}</div>
           </div>
           <p className="text-gray-600 text-[11px]">
-            In accordance with FoxPro audit rules (CAED.PRG:140), parties with invoices or ledger transactions
-            cannot be deleted in the active accounting fiscal year.
+            Customer accounts with existing invoices or outstanding ledger transactions cannot be deleted. Use [F6: Block] to prevent further billing.
           </p>
         </div>
       </DosModal>

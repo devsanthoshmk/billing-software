@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { db } from '../../src/lib/db';
+import { db, sqlite } from '../../src/lib/db';
 import {
   customers,
   areas,
@@ -61,7 +61,14 @@ describe('Feature F16: Customer Master Maintenance & Statutory Validation', () =
   describe('1. Customer Creation & Form Validations (T1-F16-01, T2-F16-01, T2-F16-02)', () => {
     it('creates customer with full regulatory details (T1-F16-01)', async () => {
       const code = 'C901';
-      await db.delete(customers).where(eq(customers.code, code)).run();
+      const existing = await db.query.customers.findFirst({ where: eq(customers.code, code) });
+      if (existing) {
+        sqlite.prepare('DELETE FROM customer_receipt_allocations WHERE outstanding_id IN (SELECT id FROM customer_outstandings WHERE customer_id = ?)').run(existing.id);
+        sqlite.prepare('DELETE FROM customer_outstandings WHERE customer_id = ?').run(existing.id);
+        sqlite.prepare('DELETE FROM invoices WHERE customer_id = ?').run(existing.id);
+        sqlite.prepare('DELETE FROM customer_receipts WHERE customer_id = ?').run(existing.id);
+        sqlite.prepare('DELETE FROM customers WHERE id = ?').run(existing.id);
+      }
 
       const res = await createCustomer({
         code,

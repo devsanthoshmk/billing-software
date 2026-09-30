@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import React from 'react';
-import { db } from '../../src/lib/db';
+import { db, sqlite } from '../../src/lib/db';
 import {
   products,
   productBatches,
@@ -620,7 +620,13 @@ describe('Adversarial Challenger Suite: UI Components & Product Master (F14, F15
     beforeAll(async () => {
       // Seed a known test product with special characteristics for 4-way filter
       const code = 'P8888';
-      await db.delete(products).where(eq(products.code, code)).run();
+      const existing = await db.query.products.findFirst({ where: eq(products.code, code) });
+      if (existing) {
+        sqlite.prepare('DELETE FROM invoice_items WHERE product_id = ?').run(existing.id);
+        sqlite.prepare('DELETE FROM purchase_items WHERE product_id = ?').run(existing.id);
+        sqlite.prepare('DELETE FROM product_batches WHERE product_id = ?').run(existing.id);
+        sqlite.prepare('DELETE FROM products WHERE id = ?').run(existing.id);
+      }
 
       const res = await createProductWithBatches({
         code,

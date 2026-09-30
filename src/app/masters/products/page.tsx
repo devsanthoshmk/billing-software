@@ -377,8 +377,8 @@ export default function ProductMasterPage() {
   return (
     <>
       <DosWindow
-        title="PRODUCT MASTER MAINTENANCE"
-        subtitle={`[SYS-1] [MODE: ${mode}]`}
+        title="PRODUCT MASTER & MEDICINE CATALOG"
+        subtitle={`[MEDICINE REGISTRY] [MODE: ${mode}]`}
         breadcrumbs={['MASTERS', 'PRODUCTS', mode]}
         actions={actionButtons}
         statusInfo={
@@ -387,7 +387,7 @@ export default function ProductMasterPage() {
               [BLOCKED FOR SALE]
             </span>
           ) : (
-            <span className="text-gray-300">Total SOH: {totalCalculatedStock}</span>
+            <span className="text-gray-300">Total Stock: {totalCalculatedStock} units</span>
           )
         }
       >
@@ -419,8 +419,8 @@ export default function ProductMasterPage() {
               />
             </div>
             <div className="p-2 border-t border-brand-border bg-brand-surface text-[11px] font-mono flex justify-between text-gray-600">
-              <span>Total: {productsList.length} items</span>
-              <span>[F5: Unified Search]</span>
+              <span>Total: {productsList.length} products</span>
+              <span>[F5: Search Products]</span>
             </div>
           </div>
 
@@ -460,8 +460,8 @@ export default function ProductMasterPage() {
               }`}
             >
               <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1 mb-3 flex justify-between">
-                <span>1. PRODUCT CATALOG HEADER</span>
-                <span className="text-gray-500">[ENTER: ADVANCE FIELD]</span>
+                <span>1. MEDICINE CATALOG INFORMATION</span>
+                <span className="text-gray-500">[ENTER: NEXT FIELD]</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -547,7 +547,7 @@ export default function ProductMasterPage() {
                     onChange={(e) => setFormData({ ...formData, taxCode: e.target.value })}
                     className="w-full border border-brand-border bg-white px-2 py-1 font-mono text-xs disabled:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-brand-amber"
                   >
-                    <option value="01">01 - 0.00% (Exempt)</option>
+                    <option value="01">01 - 0.00% (Exempt / Nil)</option>
                     <option value="02">02 - 12.00% GST</option>
                     <option value="03">03 - 18.00% GST</option>
                     <option value="04">04 - 28.00% GST</option>
@@ -572,11 +572,11 @@ export default function ProductMasterPage() {
                     }
                     className="w-full border border-brand-border bg-white px-2 py-1 font-mono text-xs disabled:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-brand-amber"
                   >
-                    <option value="NONE">NONE - General</option>
-                    <option value="H">H - Schedule H</option>
-                    <option value="H1">H1 - Schedule H1</option>
-                    <option value="X">X - Schedule X</option>
-                    <option value="NARCOTIC">NARCOTIC</option>
+                    <option value="NONE">NONE - General Medicine</option>
+                    <option value="H">H - Schedule H (Prescription)</option>
+                    <option value="H1">H1 - Schedule H1 (Controlled)</option>
+                    <option value="X">X - Schedule X (Psychotropic)</option>
+                    <option value="NARCOTIC">NARCOTIC - Narcotic Substance</option>
                   </select>
                 </div>
 
@@ -630,9 +630,9 @@ export default function ProductMasterPage() {
             <div className="border border-brand-border p-3 flex-1 flex flex-col bg-white">
               <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1 mb-2 flex justify-between items-center">
                 <span className="flex items-center gap-2">
-                  <span>2. BATCH INVENTORY DETAILS</span>
+                  <span>2. BATCH INVENTORY &amp; RATES</span>
                   <span className="text-gray-500 font-normal">
-                    (Formula: MRP &ge; Selling Rate &ge; Purchase Rate)
+                    (Pricing Rule: MRP &ge; Selling Rate &ge; Purchase Rate)
                   </span>
                 </span>
                 {mode !== 'VIEW' && (
@@ -652,9 +652,9 @@ export default function ProductMasterPage() {
                     <tr>
                       <th className="p-1.5 border-r border-gray-600 text-left w-28">BATCH NO</th>
                       <th className="p-1.5 border-r border-gray-600 text-center w-20">EXPIRY (MM/YY)</th>
-                      <th className="p-1.5 border-r border-gray-600 text-right w-24">PURC. RATE</th>
-                      <th className="p-1.5 border-r border-gray-600 text-right w-24">SALE (PTR)</th>
-                      <th className="p-1.5 border-r border-gray-600 text-right w-24">M.R.P</th>
+                      <th className="p-1.5 border-r border-gray-600 text-right w-24">PURCHASE (₹)</th>
+                      <th className="p-1.5 border-r border-gray-600 text-right w-24">SELLING / PTR (₹)</th>
+                      <th className="p-1.5 border-r border-gray-600 text-right w-24">M.R.P (₹)</th>
                       <th className="p-1.5 border-r border-gray-600 text-right w-20">STOCK</th>
                       <th className="p-1.5 border-r border-gray-600 text-right w-20">MARGIN</th>
                     </tr>
@@ -762,7 +762,7 @@ export default function ProductMasterPage() {
                   Batches: {(formData.batches || []).length} | Total Stock: {totalCalculatedStock} units
                 </span>
                 <span className="font-bold text-brand-ink">
-                  Stock Invariant Verified: totalStockOnHand &equiv; &sum; batches.stockQty
+                  Stock on Hand: {totalCalculatedStock} units
                 </span>
               </div>
             </div>
@@ -770,7 +770,7 @@ export default function ProductMasterPage() {
         </div>
       </DosWindow>
 
-      {/* Product Search Modal (F19) */}
+      {/* Product Search Modal */}
       <ProductSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
@@ -783,7 +783,7 @@ export default function ProductMasterPage() {
       <DosModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="CONFIRM PRODUCT DELETION <Y/N>?"
+        title="CONFIRM PRODUCT DELETION"
         variant="danger"
         confirmText="[Enter: Delete Product]"
         cancelText="[ESC: Cancel]"
@@ -791,7 +791,7 @@ export default function ProductMasterPage() {
       >
         <div className="flex flex-col gap-2 font-mono text-xs">
           <p className="font-bold text-red-600">
-            Are you sure you want to permanently delete this product?
+            Are you sure you want to permanently delete this medicine from the catalog?
           </p>
           <div className="p-2 bg-brand-surface border border-brand-border text-gray-800">
             <div>Code: {formData.code}</div>
@@ -799,8 +799,7 @@ export default function ProductMasterPage() {
             <div>Stock: {totalCalculatedStock} units</div>
           </div>
           <p className="text-gray-600 text-[11px]">
-            Deletion is only permitted if no historical transactions (invoices or purchases) exist.
-            Otherwise, use [F6: Block] to safely prevent sales.
+            Products with existing billing or purchase history cannot be deleted. Use [F6: Block] instead to prevent further sales.
           </p>
         </div>
       </DosModal>

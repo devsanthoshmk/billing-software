@@ -219,7 +219,7 @@ export default function AuxiliaryMastersPage() {
     { id: 'SALESMEN', label: 'Salesmen', num: '2' },
     { id: 'AREAS', label: 'Territory Areas', num: '3' },
     { id: 'TAX_SLABS', label: 'GST Tax Slabs', num: '4' },
-    { id: 'COMPANIES', label: 'Mfr Companies', num: '5' },
+    { id: 'COMPANIES', label: 'Pharma Companies', num: '5' },
   ];
 
   const actionButtons: DosAction[] =
@@ -238,11 +238,11 @@ export default function AuxiliaryMastersPage() {
   return (
     <>
       <DosWindow
-        title={`AUXILIARY ENTITIES: ${activeTab.replace('_', ' ')}`}
-        subtitle={`[SYS-1] [MODE: ${mode}]`}
+        title={`AUXILIARY MASTERS: ${activeTab.replace('_', ' ')}`}
+        subtitle={`[DOCTORS, SALESMEN, AREAS, TAX SLABS & COMPANIES] [MODE: ${mode}]`}
         breadcrumbs={['MASTERS', 'AUXILIARY', activeTab]}
         actions={actionButtons}
-        statusInfo={<span className="text-gray-300">KEYS: [1..5: TABS] [F1: ADD] [F2: EDIT] [F3: DEL]</span>}
+        statusInfo={<span className="text-gray-300">[1..5: SWITCH TAB] [F1: ADD] [F2: EDIT] [F3: DELETE]</span>}
       >
         <div className="flex flex-col h-full overflow-hidden">
           {/* Sub-Master Tab Strip */}
@@ -399,7 +399,7 @@ export default function AuxiliaryMastersPage() {
               {activeTab === 'DOCTORS' && (
                 <div className="border border-brand-border p-3 bg-white flex flex-col gap-3">
                   <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1">
-                    DOCTOR REGISTRATION DETAILS (PRESCRIPTION INTEGRATION)
+                    DOCTOR PROFILE &amp; MEDICAL COUNCIL REGISTRATION
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -471,7 +471,7 @@ export default function AuxiliaryMastersPage() {
               {activeTab === 'SALESMEN' && (
                 <div className="border border-brand-border p-3 bg-white flex flex-col gap-3">
                   <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1">
-                    SALES REPRESENTATIVE & COMMISSION PROFILE
+                    FIELD SALES REPRESENTATIVE &amp; COMMISSION SETTINGS
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -534,7 +534,7 @@ export default function AuxiliaryMastersPage() {
               {activeTab === 'AREAS' && (
                 <div className="border border-brand-border p-3 bg-white flex flex-col gap-3">
                   <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1">
-                    TERRITORY AREA & ROUTE ASSIGNMENT
+                    TERRITORY AREA &amp; BEAT ASSIGNMENT
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -591,9 +591,9 @@ export default function AuxiliaryMastersPage() {
               {activeTab === 'TAX_SLABS' && (
                 <div className="border border-brand-border p-3 bg-white flex flex-col gap-3">
                   <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1 flex justify-between">
-                    <span>STATUTORY GST TAX SLAB</span>
+                    <span>GST TAX SLAB CONFIGURATION</span>
                     {activeItem.code === '01' && (
-                      <span className="text-brand-amber font-bold">[IMMUTABLE EXEMPT CODE 01]</span>
+                      <span className="text-brand-amber font-bold">[PROTECTED NIL / EXEMPT RATE]</span>
                     )}
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -670,7 +670,7 @@ export default function AuxiliaryMastersPage() {
                 <div className="flex flex-col gap-4 flex-1">
                   <div className="border border-brand-border p-3 bg-white flex flex-col gap-3">
                     <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1">
-                      MANUFACTURER COMPANY PROFILE
+                      PHARMA MANUFACTURER / COMPANY PROFILE
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <div>
@@ -710,7 +710,7 @@ export default function AuxiliaryMastersPage() {
                   {/* Company Products Sub-list (T2-F18-05) */}
                   <div className="border border-brand-border bg-white p-3 flex-1 flex flex-col">
                     <div className="font-bold text-brand-ink uppercase text-[11px] border-b border-brand-border pb-1 mb-2 flex justify-between">
-                      <span>CATALOG MEDICINES TAGGED TO THIS COMPANY</span>
+                      <span>MEDICINES LINKED TO THIS COMPANY</span>
                       <span className="text-gray-500">Total: {companyProducts.length} products</span>
                     </div>
                     <div className="flex-1 overflow-auto border border-brand-border h-40">
@@ -727,7 +727,7 @@ export default function AuxiliaryMastersPage() {
                           {companyProducts.length === 0 ? (
                             <tr>
                               <td colSpan={4} className="p-4 text-center text-gray-400">
-                                --- NO PRODUCTS TAGGED TO THIS COMPANY ---
+                                --- NO MEDICINES LINKED TO THIS COMPANY ---
                               </td>
                             </tr>
                           ) : (
@@ -755,7 +755,7 @@ export default function AuxiliaryMastersPage() {
       <DosModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title={`CONFIRM ${activeTab} DELETION <Y/N>?`}
+        title={`CONFIRM ${activeTab.replace('_', ' ')} DELETION`}
         variant="danger"
         confirmText="[Enter: Delete]"
         cancelText="[ESC: Cancel]"
@@ -763,14 +763,14 @@ export default function AuxiliaryMastersPage() {
       >
         <div className="flex flex-col gap-2 font-mono text-xs">
           <p className="font-bold text-red-600">
-            Are you sure you want to delete this {activeTab.toLowerCase()} record?
+            Are you sure you want to delete this {activeTab.toLowerCase().replace('_', ' ')} record?
           </p>
           <div className="p-2 bg-brand-surface border border-brand-border text-gray-800">
             <div>Code: {activeItem.code}</div>
             <div>Name: {activeItem.name || activeItem.description}</div>
           </div>
           <p className="text-gray-600 text-[11px]">
-            Statutory referential guards prevent deletion if dependent transactions, customers, or products exist.
+            Records linked to active products, transactions, or customer accounts cannot be deleted.
           </p>
         </div>
       </DosModal>

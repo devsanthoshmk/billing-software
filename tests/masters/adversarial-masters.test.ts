@@ -8,7 +8,7 @@ import {
   taxSlabs,
   products,
 } from '../../src/lib/db/schema/masters';
-import { invoices, purchases } from '../../src/lib/db/schema/transactions';
+import { invoices, invoiceItems, purchases } from '../../src/lib/db/schema/transactions';
 import { customerOutstandings, supplierPayments } from '../../src/lib/db/schema/ledgers';
 import {
   createCustomer,
@@ -374,7 +374,16 @@ describe('Adversarial Stress Suite: Masters Maintenance (Features F16, F17, F18)
     describe('1.4 Customer Referential Deletion Protection (CAED.PRG:140)', () => {
       it('blocks deletion of customer when sales invoices exist and leaves data intact', async () => {
         const testCode = 'C_INV_DEL';
-        await db.delete(customers).where(eq(customers.code, testCode)).run();
+        const existingCust = await db.query.customers.findFirst({ where: eq(customers.code, testCode) });
+        if (existingCust) {
+          const linkedInvoices = await db.query.invoices.findMany({ where: eq(invoices.customerId, existingCust.id) });
+          for (const inv of linkedInvoices) {
+            await db.delete(invoiceItems).where(eq(invoiceItems.invoiceId, inv.id)).run();
+            await db.delete(customerOutstandings).where(eq(customerOutstandings.invoiceId, inv.id)).run();
+            await db.delete(invoices).where(eq(invoices.id, inv.id)).run();
+          }
+          await db.delete(customers).where(eq(customers.id, existingCust.id)).run();
+        }
 
         const created = await createCustomer({
           code: testCode,
@@ -427,7 +436,15 @@ describe('Adversarial Stress Suite: Masters Maintenance (Features F16, F17, F18)
 
       it('blocks deletion of customer when customerOutstandings record exists', async () => {
         const testCode = 'C_OUT_DEL';
-        await db.delete(customers).where(eq(customers.code, testCode)).run();
+        const existingCust = await db.query.customers.findFirst({ where: eq(customers.code, testCode) });
+        if (existingCust) {
+          const linkedInvoices = await db.query.invoices.findMany({ where: eq(invoices.customerId, existingCust.id) });
+          for (const inv of linkedInvoices) {
+            await db.delete(customerOutstandings).where(eq(customerOutstandings.invoiceId, inv.id)).run();
+            await db.delete(invoices).where(eq(invoices.id, inv.id)).run();
+          }
+          await db.delete(customers).where(eq(customers.id, existingCust.id)).run();
+        }
 
         const created = await createCustomer({
           code: testCode,
@@ -712,7 +729,11 @@ describe('Adversarial Stress Suite: Masters Maintenance (Features F16, F17, F18)
 
       it('blocks deletion when supplier currentBalance is 0 but purchase bills exist', async () => {
         const testCode = 'S_PUR_DEL';
-        await db.delete(suppliers).where(eq(suppliers.code, testCode)).run();
+        const existingSup = await db.query.suppliers.findFirst({ where: eq(suppliers.code, testCode) });
+        if (existingSup) {
+          await db.delete(purchases).where(eq(purchases.supplierId, existingSup.id)).run();
+          await db.delete(suppliers).where(eq(suppliers.id, existingSup.id)).run();
+        }
 
         const created = await createSupplier({
           code: testCode,
@@ -757,7 +778,16 @@ describe('Adversarial Stress Suite: Masters Maintenance (Features F16, F17, F18)
     describe('3.1 Area Deletion Guard: Active Linked Customers (AAED.PRG:91)', () => {
       it('blocks deletion of area when active customer accounts are linked', async () => {
         const areaCode = 'A_LINK_01';
-        await db.delete(areas).where(eq(areas.code, areaCode)).run();
+        const existingArea = await db.query.areas.findFirst({ where: eq(areas.code, areaCode) });
+        if (existingArea) {
+          const linkedCusts = await db.query.customers.findMany({ where: eq(customers.areaId, existingArea.id) });
+          for (const c of linkedCusts) {
+            await db.delete(customerOutstandings).where(eq(customerOutstandings.customerId, c.id)).run();
+            await db.delete(invoices).where(eq(invoices.customerId, c.id)).run();
+            await db.delete(customers).where(eq(customers.id, c.id)).run();
+          }
+          await db.delete(areas).where(eq(areas.id, existingArea.id)).run();
+        }
 
         const createdArea = await createArea({
           code: areaCode,
