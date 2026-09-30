@@ -59,7 +59,7 @@ export default function ExpiryReportPage() {
 
   return (
     <DosWindow
-      title="SHORT-EXPIRY & EXPIRED STOCK STATEMENT [EXPSTK.PRG]"
+      title="Short-Expiry & Expired Stock Alert"
       breadcrumbs={['REPORTS', 'SHORT-EXPIRY']}
       actions={[
         { keyLabel: 'F5', label: 'Refresh', onClick: loadReport },
@@ -86,11 +86,11 @@ export default function ExpiryReportPage() {
               onChange={(e) => setDaysWindow(Number(e.target.value))}
               className="w-full p-1 bg-white border border-brand-border font-bold text-brand-ink"
             >
-              <option value={0}>ALREADY EXPIRED BATCHES ONLY (EXP &lt; AS-OF)</option>
-              <option value={30}>CRITICAL: WITHIN 30 DAYS</option>
-              <option value={60}>NEAR EXPIRY: WITHIN 60 DAYS</option>
-              <option value={90}>WATCH LIST: WITHIN 90 DAYS (STANDARD)</option>
-              <option value={180}>EXTENDED: WITHIN 180 DAYS (6 MONTHS)</option>
+              <option value={0}>Already Expired Batches Only</option>
+              <option value={30}>Critical: Within 30 Days</option>
+              <option value={60}>Near Expiry: Within 60 Days</option>
+              <option value={90}>Watch List: Within 90 Days (Standard)</option>
+              <option value={180}>Extended: Within 180 Days (6 Months)</option>
             </select>
           </div>
 

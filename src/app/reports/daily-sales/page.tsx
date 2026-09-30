@@ -66,7 +66,7 @@ export default function DailySalesReportPage() {
 
   return (
     <DosWindow
-      title="DAILY SALES & CASHIER REGISTER [XDAYSAL.PRG]"
+      title="Daily Sales Register"
       breadcrumbs={['REPORTS', 'DAILY SALES']}
       actions={[
         { keyLabel: 'F5', label: 'Generate', onClick: loadReport },
@@ -77,7 +77,7 @@ export default function DailySalesReportPage() {
         {/* Filter Strip */}
         <div className="p-3 bg-brand-surface border border-brand-border grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
           <div>
-            <label className="block font-bold text-gray-700 mb-1">REPORT DATE:</label>
+            <label className="block font-bold text-gray-700 mb-1">DATE:</label>
             <input
               type="date"
               value={reportDate}
@@ -87,7 +87,7 @@ export default function DailySalesReportPage() {
           </div>
 
           <div>
-            <label className="block font-bold text-gray-700 mb-1">OPERATOR / CASHIER:</label>
+            <label className="block font-bold text-gray-700 mb-1">BILLED BY / CASHIER:</label>
             <select
               value={operatorId}
               onChange={(e) => setOperatorId(e.target.value)}
@@ -216,7 +216,7 @@ export default function DailySalesReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [3] STATUTORY TAX SLABS (0..28%)
+            [3] GST TAX SLABS (0% - 28%)
           </button>
           <button
             type="button"
@@ -227,7 +227,7 @@ export default function DailySalesReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [4] DRAWER RECONCILIATION
+            [4] CASH DRAWER RECONCILIATION
           </button>
         </div>
 
@@ -375,33 +375,33 @@ export default function DailySalesReportPage() {
         {activeTab === 'reconciliation' && summary && (
           <div className="bg-white border border-brand-border p-6 max-w-xl mx-auto flex flex-col gap-4">
             <h3 className="text-sm font-bold border-b border-brand-border pb-2 text-center uppercase">
-              PHYSICAL CASH DRAWER RECONCILIATION STATEMENT — {reportDate}
+              CASH DRAWER RECONCILIATION STATEMENT — {reportDate}
             </h3>
 
             <div className="flex flex-col gap-2 font-mono text-sm">
               <div className="flex justify-between py-1 border-b border-gray-100">
-                <span className="text-gray-700">(+) CASH INVOICES GENERATED TODAY</span>
+                <span className="text-gray-700">(+) CASH SALES INVOICES</span>
                 <span className="font-bold text-green-700">₹ {summary.cashSalesAmount.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between py-1 border-b border-gray-100">
-                <span className="text-gray-700">(+) CASH COLLECTIONS FROM CUSTOMERS TODAY</span>
+                <span className="text-gray-700">(+) CUSTOMER CASH RECEIPTS & COLLECTIONS</span>
                 <span className="font-bold text-green-700">₹ {summary.cashCollectionsAmount.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between py-1 border-b border-gray-100">
-                <span className="text-gray-700">(-) CASH REFUNDS GIVEN ON SALES RETURNS</span>
+                <span className="text-gray-700">(-) CASH REFUNDS ON SALES RETURNS</span>
                 <span className="font-bold text-red-600">(-) ₹ {summary.cashRefundsAmount.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between py-3 border-t-2 border-black border-b-2 font-bold text-base bg-yellow-50 px-2 mt-2">
-                <span>(=) RECONCILED NET PHYSICAL CASH IN DRAWER:</span>
+                <span>(=) NET EXPECTED CASH IN DRAWER:</span>
                 <span className="text-brand-ink">₹ {summary.netCashInDrawer.toFixed(2)}</span>
               </div>
             </div>
 
             <p className="text-[11px] text-gray-500 italic text-center">
-              Reconciles with Day-End Closing cash drawer audit count. All collections & cash invoices are verified against database records.
+              Reconciles cash sales, receipts, and returns for the selected day against cash drawer records.
             </p>
           </div>
         )}

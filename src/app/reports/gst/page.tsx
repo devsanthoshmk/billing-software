@@ -77,18 +77,18 @@ export default function GstReportPage() {
 
   return (
     <DosWindow
-      title="STATUTORY GST STATEMENTS & RETURNS (GSTR-1 & 3B) [GSTMENU.PRG]"
-      breadcrumbs={['REPORTS', 'STATUTORY GST']}
+      title="GST Tax Summary (GSTR-1 & 3B)"
+      breadcrumbs={['REPORTS', 'GST TAX SUMMARY']}
       actions={[
         { keyLabel: 'F5', label: 'Recompute', onClick: loadData },
-        { keyLabel: 'F8', label: 'Export Govt JSON', onClick: handleExportJson },
+        { keyLabel: 'F8', label: 'Export JSON', onClick: handleExportJson },
       ]}
     >
       <div className="flex flex-col gap-4 font-mono text-xs">
         {/* Filter Strip */}
         <div className="p-3 bg-brand-surface border border-brand-border grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
           <div>
-            <label className="block font-bold text-gray-700 mb-1">RETURN PERIOD START:</label>
+            <label className="block font-bold text-gray-700 mb-1">FROM DATE:</label>
             <input
               type="date"
               value={startDate}
@@ -98,7 +98,7 @@ export default function GstReportPage() {
           </div>
 
           <div>
-            <label className="block font-bold text-gray-700 mb-1">RETURN PERIOD END:</label>
+            <label className="block font-bold text-gray-700 mb-1">TO DATE:</label>
             <input
               type="date"
               value={endDate}
@@ -121,7 +121,7 @@ export default function GstReportPage() {
               onClick={handleExportJson}
               className="px-3 py-1.5 bg-brand-amber text-black font-bold hover:bg-yellow-500 cursor-pointer"
             >
-              [F8] GOVT JSON
+              [F8] EXPORT JSON
             </button>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function GstReportPage() {
         {gstr3b && (
           <div className="p-3 bg-white border-2 border-brand-ink grid grid-cols-1 sm:grid-cols-4 gap-3 shadow-[4px_4px_0px_0px_#0B192C]">
             <div>
-              <span className="text-[10px] text-gray-500 font-bold uppercase">OUTWARD TAX LIABILITY (SALES)</span>
+              <span className="text-[10px] text-gray-500 font-bold uppercase">OUTPUT TAX LIABILITY (SALES)</span>
               <span className="text-base font-bold text-red-600 block">
                 ₹ {gstr3b.totalOutwardTaxLiability.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </span>
@@ -154,7 +154,7 @@ export default function GstReportPage() {
             <div className="sm:col-span-2 p-2 bg-yellow-50 border border-brand-amber flex flex-col justify-center">
               {gstr3b.totalNetTaxPayable > 0 ? (
                 <div>
-                  <span className="text-[10px] font-bold text-red-700 uppercase">NET TAX CASH PAYABLE IN GOVT CHALLAN:</span>
+                  <span className="text-[10px] font-bold text-red-700 uppercase">NET TAX PAYABLE VIA CHALLAN:</span>
                   <span className="text-lg font-bold text-red-700 block">
                     ₹ {gstr3b.totalNetTaxPayable.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
@@ -164,7 +164,7 @@ export default function GstReportPage() {
                 </div>
               ) : (
                 <div>
-                  <span className="text-[10px] font-bold text-green-800 uppercase">EXCESS INPUT CREDIT (ITC CARRYFORWARD):</span>
+                  <span className="text-[10px] font-bold text-green-800 uppercase">EXCESS INPUT TAX CREDIT (CARRIED FORWARD):</span>
                   <span className="text-lg font-bold text-green-800 block">
                     ₹ {gstr3b.excessItcCarryforward.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
@@ -186,7 +186,7 @@ export default function GstReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [1] GSTR-1 TABLE 4: B2B INVOICES ({b2b.length})
+            [1] B2B INVOICES (TABLE 4) ({b2b.length})
           </button>
           <button
             type="button"
@@ -197,7 +197,7 @@ export default function GstReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [2] GSTR-1 TABLE 7: B2C SUPPLIES ({b2c.length})
+            [2] B2C SUPPLIES (TABLE 7) ({b2c.length})
           </button>
           <button
             type="button"
@@ -208,7 +208,7 @@ export default function GstReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [3] GSTR-1 TABLE 9: CREDIT / DEBIT NOTES ({notes.length})
+            [3] CREDIT & DEBIT NOTES (TABLE 9) ({notes.length})
           </button>
           <button
             type="button"
@@ -219,7 +219,7 @@ export default function GstReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [4] GSTR-1 TABLE 12: HSN SUMMARY ({hsn.length})
+            [4] HSN SUMMARY (TABLE 12) ({hsn.length})
           </button>
           <button
             type="button"
@@ -230,7 +230,7 @@ export default function GstReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [5] GSTR-3B RETURN SUMMARY
+            [5] GSTR-3B MONTHLY RETURN
           </button>
         </div>
 

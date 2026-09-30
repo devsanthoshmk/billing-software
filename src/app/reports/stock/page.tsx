@@ -98,7 +98,7 @@ export default function StockReportPage() {
 
   return (
     <DosWindow
-      title="STOCK VALUATION & INVENTORY LEDGER [CLOSTK.PRG]"
+      title="Stock Valuation Statement"
       breadcrumbs={['REPORTS', 'STOCK VALUATION']}
       actions={[
         { keyLabel: 'F5', label: 'Refresh', onClick: loadData },
@@ -215,7 +215,7 @@ export default function StockReportPage() {
                 : 'bg-white text-brand-ink border-brand-border hover:bg-gray-100'
             }`}
           >
-            [1] STOCK VALUATION LEDGER (CLOSTK)
+            [1] STOCK VALUATION LEDGER
           </button>
           <button
             type="button"
