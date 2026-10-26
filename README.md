@@ -1,4 +1,4 @@
-# Siva ERP (Medisys)
+# Medisys
 
 A 1:1 modern web port of the legacy FoxPro wholesale pharmaceutical and distribution ERP. Built with Next.js App Router, SQLite (via `better-sqlite3` and Drizzle ORM in WAL mode), Tailwind CSS, and a zero-radius DOS terminal interface designed for rapid keyboard-only data entry.
 
